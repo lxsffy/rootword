@@ -620,13 +620,17 @@ enum Importer {
 
     // MARK: - 列对齐（单元格内出现逗号时）
 
-    /// 把一行按「, / ，」切开，并保留每个片段后面的原始逗号，便于重合并时原样拼回
-    private static func commaPieces(_ line: String) -> (tokens: [String], separators: [Character]) {
+    /// 把一行按逗号切开，并保留每个片段后面的原始逗号，便于重合并时原样拼回。
+    ///
+    /// `includeFullWidth` 为 false 时只认半角「,」，全角「，」留在单元格内容里不切
+    /// （中文例句/记忆法里的「，」不该把它后面的列整体前移）。
+    private static func commaPieces(_ line: String,
+                                    includeFullWidth: Bool = true) -> (tokens: [String], separators: [Character]) {
         var tokens: [String] = []
         var separators: [Character] = []
         var current = ""
         for character in line {
-            if character == "," || character == "，" {
+            if character == "," || (includeFullWidth && character == "，") {
                 tokens.append(current)
                 separators.append(character)
                 current = ""
@@ -640,8 +644,10 @@ enum Importer {
 
     /// 把一行落到各列上，返回与 `keys` 等长的字段数组（缺列补空串）。
     ///
-    /// 字段数 ≤ 列数时按位置一一对应（与旧行为一致）；字段数更多说明有单元格含逗号，
-    /// 此时用列语义评分在多种切法中挑最优（`bestAlignment`），把错位的列摆正。
+    /// 逗号行同时生成两种候选切法，再由列语义总分择优：
+    /// ① 只认半角「,」——全角「，」视为单元格内容（中文例句/记忆法里的「，」不该切列）；
+    /// ② 半角 + 全角都当分隔符——兼容「predict，预测，/prɪˈdɪkt/，v.」这类纯中文逗号表格。
+    /// 两者都先对齐到列（片段数 ≤ 列数按位置补空，片段数更多走 `bestAlignment` 合并）。
     private static func splitIntoColumns(_ line: String,
                                         delimiter: Character?,
                                         keys: [String]) -> [String] {
@@ -652,20 +658,70 @@ enum Importer {
             return (0..<keys.count).map { $0 < tokens.count ? tokens[$0] : "" }
         }
 
-        let pieces = commaPieces(line)
-        let tokens = pieces.tokens
-        guard tokens.count > keys.count else {
-            return (0..<keys.count).map { $0 < tokens.count ? tokens[$0] : "" }
+        let strict = commaPieces(line, includeFullWidth: false)
+        let loose = commaPieces(line, includeFullWidth: true)
+        let strictCandidate = columnCandidate(tokens: strict.tokens, separators: strict.separators, keys: keys)
+        let looseCandidate = columnCandidate(tokens: loose.tokens, separators: loose.separators, keys: keys)
+        let candidates = [strictCandidate, looseCandidate].compactMap { $0 }
+        guard !candidates.isEmpty else {
+            let fallback = strict.tokens
+            return (0..<keys.count).map { $0 < fallback.count ? fallback[$0] : "" }
         }
-        return bestAlignment(tokens: tokens, separators: pieces.separators, keys: keys)
-            ?? (0..<keys.count).map { tokens[$0] }
+
+        // 半角逗号正好切满每一列：说明「，」只可能是单元格内容，直接采用该切法
+        // （否则列语义评分可能为了凑分把例句里的「，」拆成列，反而错位）。
+        if let strictCandidate = strictCandidate,
+           strictCandidate.hasValidWord,
+           strict.tokens.count == keys.count {
+            return strictCandidate.values
+        }
+
+        // 能切出合法单词列的候选优先（纯中文逗号行只有候选 ② 合法）；都成立时取语义总分更高者。
+        // 平分时 `max` 保留靠前的候选，即优先「中文逗号归单元格内容」的切法。
+        let valid = candidates.filter { $0.hasValidWord }
+        let pool = valid.isEmpty ? candidates : valid
+        return pool.max { $0.score < $1.score }?.values ?? []
+    }
+
+    /// 一种候选切法对齐后的结果：字段数组 + 列语义总分 + 单词列是否合法
+    private struct ColumnCandidate {
+        var values: [String]
+        var score: Int
+        var hasValidWord: Bool
+    }
+
+    /// 把一组片段对齐到 `keys` 各列，并给出用于择优的列语义总分。
+    /// 片段数 ≤ 列数按位置一一对应；更多则交给 `bestAlignment` 合并。
+    private static func columnCandidate(tokens: [String],
+                                        separators: [Character],
+                                        keys: [String]) -> ColumnCandidate? {
+        guard !keys.isEmpty, !tokens.isEmpty else { return nil }
+
+        var values: [String]
+        var score = 0
+        if tokens.count <= keys.count {
+            values = (0..<keys.count).map { $0 < tokens.count ? tokens[$0] : "" }
+            for index in 0..<tokens.count {
+                score += columnFitScore(key: keys[index], value: values[index]) * 100
+                    + (keys.count - index)
+            }
+        } else {
+            guard let aligned = bestAlignment(tokens: tokens, separators: separators, keys: keys) else { return nil }
+            values = aligned.values
+            score = aligned.score
+        }
+
+        let wordIndex = keys.firstIndex(of: "word") ?? 0
+        let word = values[wordIndex].trimmingCharacters(in: .whitespaces)
+        return ColumnCandidate(values: values, score: score, hasValidWord: isValidWord(word))
     }
 
     /// 动态规划对齐：把 m 个片段切成 n 段（n = 列数），使各段与所在列的语义最匹配。
     /// 主目标是 `columnFitScore` 之和（乘 100 保持主导），平手时优先让靠前的列只占一个片段。
+    /// 返回值同时给出该切法的总分，供多候选（半角逗号 / 半角+全角逗号）之间比较。
     private static func bestAlignment(tokens: [String],
                                       separators: [Character],
-                                      keys: [String]) -> [String]? {
+                                      keys: [String]) -> (values: [String], score: Int)? {
         let n = keys.count
         let m = tokens.count
         guard n > 0, m > n else { return nil }
@@ -702,7 +758,7 @@ enum Importer {
             values[column - 1] = join(tokens: tokens, separators: separators, from: start, to: end)
             end = start
         }
-        return values
+        return (values, dp[n][m])
     }
 
     /// 重合并相邻片段：用原文里的分隔符原样拼回（「，」保持「，」）
