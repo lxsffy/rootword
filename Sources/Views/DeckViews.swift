@@ -347,6 +347,21 @@ enum WordSortMode: String, CaseIterable, Identifiable {
     }
 }
 
+/// P09 词单详情页的弹层：导入单词 / 导出 CSV 后的系统分享（文档 5.9）。
+private enum DeckDetailSheet: Identifiable {
+    case importWords
+    case share(URL)
+
+    var id: String {
+        switch self {
+        case .importWords:
+            return "importWords"
+        case .share(let url):
+            return "share-" + url.absoluteString
+        }
+    }
+}
+
 struct DeckDetailView: View {
 
     @EnvironmentObject private var state: AppState
@@ -354,7 +369,7 @@ struct DeckDetailView: View {
 
     @State private var keyword = ""
     @State private var sortMode: WordSortMode = .custom
-    @State private var showImport = false
+    @State private var activeSheet: DeckDetailSheet?
     @State private var showStudy = false
     @State private var pendingDelete: Word?
 
@@ -373,7 +388,7 @@ struct DeckDetailView: View {
                                        title: "这个词单还是空的",
                                        message: "支持 TXT / CSV / JSON 三种格式，导入后可自动生成构词拆解。",
                                        primaryTitle: "导入单词",
-                                       primaryAction: { showImport = true },
+                                       primaryAction: { activeSheet = .importWords },
                                        secondaryTitle: nil,
                                        secondaryAction: nil)
                     }
@@ -392,8 +407,11 @@ struct DeckDetailView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Menu {
-                    Button(action: { showImport = true }) {
+                    Button(action: { activeSheet = .importWords }) {
                         Label("导入单词", systemImage: "tray.and.arrow.down")
+                    }
+                    Button(action: exportCSV) {
+                        Label("导出词单（CSV）", systemImage: "square.and.arrow.up")
                     }
                     Button(action: startPractice) {
                         Label("练习这个词单", systemImage: "play.circle")
@@ -403,8 +421,13 @@ struct DeckDetailView: View {
                 }
             }
         }
-        .sheet(isPresented: $showImport) {
-            ImportView(preselectedDeckID: deckID).environmentObject(state)
+        .sheet(item: $activeSheet) { sheet in
+            switch sheet {
+            case .importWords:
+                ImportView(preselectedDeckID: deckID).environmentObject(state)
+            case .share(let url):
+                ShareSheet(items: [url])
+            }
         }
         .fullScreenCover(isPresented: $showStudy) {
             StudyFlowView().environmentObject(state)
@@ -557,6 +580,21 @@ struct DeckDetailView: View {
             items.sort { $0.srs.dueAt < $1.srs.dueAt }
         }
         return items
+    }
+
+    /// 「导出词单（CSV）」：落盘到 Documents 后弹系统分享面板；
+    /// 失败（空词单 / 磁盘写入失败）用 Toast 说明原因，不带出半成品文件。
+    private func exportCSV() {
+        let name = deck?.name ?? "词单"
+        let outcome = state.exportDeckCSV(deckID: deckID)
+        if let url = outcome.url {
+            activeSheet = .share(url)
+            state.showToast("已导出「\(name)」的 CSV")
+        } else {
+            state.showToast(outcome.error ?? "导出失败，请稍后重试",
+                            icon: "xmark.circle.fill",
+                            isError: true)
+        }
     }
 
     private func startPractice() {

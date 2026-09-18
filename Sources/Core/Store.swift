@@ -327,6 +327,139 @@ final class Store {
         try? fm.removeItem(at: logsURL)
     }
 
+    // MARK: - 导出词单（P09「导出词单（CSV）」，文档 5.9 / 8.5.2）
+
+    /// CSV 列定义：表头名 + 取值函数。
+    /// `alwaysEmit` 的列（单词 / 释义 / 词单）无条件输出，其余列只有在整个词单里
+    /// 至少有一条内容时才输出，避免导出满屏空列。
+    private struct CSVColumn {
+        let title: String
+        let alwaysEmit: Bool
+        let value: (Word, String) -> String
+    }
+
+    /// 把词单导出成 CSV（列序对齐文档 8.5.2：word,meaning,phonetic,pos,root,mnemonic,example,example_cn,deck），
+    /// 落到 Documents 并返回文件 URL，供系统分享面板使用。
+    ///
+    /// 三个必须守住的点：
+    /// 1. 文件名带**秒级时间戳**，同一个词单反复导出不会互相覆盖；
+    /// 2. 字段做标准 CSV 转义（逗号 / 引号 / 首尾空格才加引号），否则释义与例句里的逗号
+    ///    会把列冲散——导出的文件用本 App 再导回来就会错位，这是 CSV 最容易踩的坑；
+    /// 3. 写完**回读自检**：行数与内容必须与本次导出完全一致，不通过就删掉半成品并返回 nil，
+    ///    绝不让残缺文件流到分享面板或「文件」App 里。
+    func exportDeckCSV(deck: Deck, words: [Word]) -> URL? {
+        try? fm.createDirectory(at: documentsDir, withIntermediateDirectories: true)
+        guard !words.isEmpty else {
+            lastWriteError = "这个词单还没有单词，先导入单词再导出"
+            return nil
+        }
+
+        let ordered = words.sorted { $0.position < $1.position }
+        let columns = csvColumns(for: ordered)
+        var rows: [[String]] = [columns.map { $0.title }]
+        for word in ordered {
+            rows.append(columns.map { csvField($0.value(word, deck.name)) })
+        }
+        // Excel（Windows 版）默认按本地编码打开 CSV，带 UTF-8 BOM 才能正确显示中文
+        let body = rows.map { $0.joined(separator: ",") }.joined(separator: "\r\n") + "\r\n"
+        guard let data = ("\u{FEFF}" + body).data(using: .utf8) else {
+            lastWriteError = "导出内容编码失败"
+            return nil
+        }
+
+        let url = uniqueExportURL(deckName: deck.name, ext: "csv", now: Date())
+        do {
+            try data.write(to: url, options: .atomic)
+        } catch {
+            lastWriteError = "写入 CSV 失败：\(error.localizedDescription)"
+            return nil
+        }
+
+        if let reason = verifyWrittenCSV(at: url, expectText: body, expectWordCount: ordered.count) {
+            try? fm.removeItem(at: url)   // 不把残缺文件留在「文件」App 里误导用户
+            lastWriteError = reason
+            return nil
+        }
+        lastWriteError = nil
+        return url
+    }
+
+    /// 按词单内容决定输出哪些列（顺序固定，保证同一词单每次导出结果一致）
+    private func csvColumns(for words: [Word]) -> [CSVColumn] {
+        let all: [CSVColumn] = [
+            CSVColumn(title: "word", alwaysEmit: true, value: { word, _ in word.text }),
+            CSVColumn(title: "meaning", alwaysEmit: true, value: { word, _ in word.meaning }),
+            CSVColumn(title: "phonetic", alwaysEmit: false, value: { word, _ in word.phonetic }),
+            CSVColumn(title: "pos", alwaysEmit: false, value: { word, _ in word.pos }),
+            CSVColumn(title: "root", alwaysEmit: false, value: { word, _ in
+                word.segments.isEmpty ? "" : word.segments.map { $0.text }.joined(separator: "+")
+            }),
+            CSVColumn(title: "mnemonic", alwaysEmit: false, value: { word, _ in word.mnemonic }),
+            CSVColumn(title: "example", alwaysEmit: false, value: { word, _ in word.examples.first?.en ?? "" }),
+            CSVColumn(title: "example_cn", alwaysEmit: false, value: { word, _ in word.examples.first?.cn ?? "" }),
+            CSVColumn(title: "deck", alwaysEmit: true, value: { _, deckName in deckName })
+        ]
+        return all.filter { column in
+            column.alwaysEmit || words.contains { !column.value($0, "").isEmpty }
+        }
+    }
+
+    /// 标准 CSV 字段转义：含逗号 / 引号 / 制表符或首尾空格的字段用双引号包起来，内部引号翻倍。
+    /// 字段内的换行统一压成空格——保证「一条记录一行」，回读自检才能按行数校验。
+    private func csvField(_ raw: String) -> String {
+        let flat = raw
+            .replacingOccurrences(of: "\r\n", with: " ")
+            .replacingOccurrences(of: "\n", with: " ")
+            .replacingOccurrences(of: "\r", with: " ")
+        let needsQuote = flat.contains(",") || flat.contains("\"") || flat.contains("\t")
+            || flat.hasPrefix(" ") || flat.hasSuffix(" ")
+        return needsQuote ? "\"" + flat.replacingOccurrences(of: "\"", with: "\"\"") + "\"" : flat
+    }
+
+    /// 导出文件名：`rootword-七年级上Unit3-20260919-011530.csv`（秒级唯一，同秒追加 -2、-3）
+    private func uniqueExportURL(deckName: String, ext: String, now: Date) -> URL {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.calendar = Calendar(identifier: .gregorian)
+        formatter.dateFormat = "yyyyMMdd-HHmmss"
+        let stamp = formatter.string(from: now)
+        let stem = sanitizedFileStem(deckName)
+
+        var url = documentsDir.appendingPathComponent("rootword-\(stem)-\(stamp).\(ext)")
+        var suffix = 2
+        while fm.fileExists(atPath: url.path) {
+            url = documentsDir.appendingPathComponent("rootword-\(stem)-\(stamp)-\(suffix).\(ext)")
+            suffix += 1
+        }
+        return url
+    }
+
+    /// 文件名安全化：去掉路径分隔符与控制字符，压掉空白，截到 40 字，空则回退「词单」
+    private func sanitizedFileStem(_ name: String) -> String {
+        let illegal = CharacterSet(charactersIn: "/\\:*?\"<>|\n\r\t")
+        var stem = name.components(separatedBy: illegal).joined()
+        stem = stem.replacingOccurrences(of: " ", with: "")
+        stem = stem.trimmingCharacters(in: .whitespacesAndNewlines)
+        if stem.count > 40 { stem = String(stem.prefix(40)) }
+        return stem.isEmpty ? "词单" : stem
+    }
+
+    /// CSV 回读自检：文件确实落盘、能按 UTF-8 读回、行数（不含表头）等于单词数、内容逐字一致。
+    /// 返回 nil 表示校验通过，否则返回可展示给用户的失败原因。
+    private func verifyWrittenCSV(at url: URL, expectText: String, expectWordCount: Int) -> String? {
+        guard fm.fileExists(atPath: url.path) else { return "CSV 文件没有生成" }
+        guard let data = try? Data(contentsOf: url), !data.isEmpty else { return "CSV 文件是空的" }
+        guard let raw = String(data: data, encoding: .utf8) else { return "CSV 文件写完后读不回来" }
+
+        let text = raw.hasPrefix("\u{FEFF}") ? String(raw.dropFirst()) : raw
+        let lines = text.components(separatedBy: "\r\n").filter { !$0.isEmpty }
+        guard lines.count == expectWordCount + 1 else {
+            return "CSV 行数不对（\(max(0, lines.count - 1))/\(expectWordCount) 行），已取消导出"
+        }
+        guard text == expectText else { return "CSV 写完后内容校验不一致，已取消导出" }
+        return nil
+    }
+
     // MARK: - 备份文件结构
 
     struct BackupFile: Codable {

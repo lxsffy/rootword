@@ -462,6 +462,17 @@ final class AppState: ObservableObject {
         return (url, url == nil ? (store.lastWriteError ?? "导出失败，请稍后重试") : nil)
     }
 
+    /// 导出某个词单为 CSV（P09「导出词单（CSV）」，文档 5.9）。
+    /// 成功返回文件 URL（交给系统分享面板），失败返回 nil 并带回可直接展示的原因。
+    func exportDeckCSV(deckID: String) -> (url: URL?, error: String?) {
+        guard let deck = decks.first(where: { $0.id == deckID }) else {
+            return (nil, "找不到这个词单，可能已经被删除了")
+        }
+        let items = words(in: deckID).sorted { $0.position < $1.position }
+        let url = store.exportDeckCSV(deck: deck, words: items)
+        return (url, url == nil ? (store.lastWriteError ?? "导出失败，请稍后重试") : nil)
+    }
+
     // MARK: - 从备份恢复（P18 数据管理）
 
     /// 只读校验备份文件，不改动任何现有数据。供 UI 在二次确认前展示

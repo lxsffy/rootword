@@ -675,25 +675,79 @@ enum Importer {
     /// （中文例句/记忆法里的「，」不该把它后面的列整体前移）。
     private static func commaPieces(_ line: String,
                                     includeFullWidth: Bool = true) -> (tokens: [String], separators: [Character]) {
-        pieces(line, by: ",", alsoFullWidthComma: includeFullWidth)
+        pieces(line, by: ",", alsoFullWidthComma: includeFullWidth, respectQuotes: true)
     }
 
     /// 按单个字符切分一行，并保留每个片段后面的原始分隔符（用于把单元格内的分隔符并回原列）。
+    ///
+    /// `respectQuotes` 打开后按标准 CSV 规则处理双引号包裹：只有「单元格开头」的引号才算包裹
+    /// （行内零散的引号仍按普通字符处理，避免误吞分隔符），包裹内的分隔符不切列、`""` 还原为一个 `"`。
+    /// P09「导出词单（CSV）」写出的文件就是这种包裹，导回来才不会把带逗号的单元格切散。
     private static func pieces(_ line: String,
                                by delimiter: Character,
-                               alsoFullWidthComma: Bool = false) -> (tokens: [String], separators: [Character]) {
+                               alsoFullWidthComma: Bool = false,
+                               respectQuotes: Bool = false) -> (tokens: [String], separators: [Character]) {
+        guard respectQuotes else {
+            var tokens: [String] = []
+            var separators: [Character] = []
+            var current = ""
+            for character in line {
+                if character == delimiter || (alsoFullWidthComma && character == "，") {
+                    tokens.append(current)
+                    separators.append(character)
+                    current = ""
+                } else {
+                    current.append(character)
+                }
+            }
+            tokens.append(current)
+            return (tokens, separators)
+        }
+
+        let characters = Array(line)
         var tokens: [String] = []
         var separators: [Character] = []
         var current = ""
-        for character in line {
+        var index = 0
+        var inQuotes = false
+
+        while index < characters.count {
+            let character = characters[index]
+
+            if inQuotes {
+                if character == "\"" {
+                    if index + 1 < characters.count, characters[index + 1] == "\"" {
+                        current.append("\"")
+                        index += 2
+                        continue
+                    }
+                    inQuotes = false
+                    index += 1
+                    continue
+                }
+                current.append(character)
+                index += 1
+                continue
+            }
+
+            if character == "\"", current.isEmpty {
+                inQuotes = true
+                index += 1
+                continue
+            }
+
             if character == delimiter || (alsoFullWidthComma && character == "，") {
                 tokens.append(current)
                 separators.append(character)
                 current = ""
-            } else {
-                current.append(character)
+                index += 1
+                continue
             }
+
+            current.append(character)
+            index += 1
         }
+
         tokens.append(current)
         return (tokens, separators)
     }
@@ -1240,8 +1294,27 @@ enum ImportSelfCheck {
             note("竖线行词根并回", false, "抛错：\(describe(error))")
         }
 
+        // 场景 10：标准 CSV 引号包裹（P09「导出词单（CSV）」的写法）必须能原样导回
+        do {
+            let quoted = "word,meaning,phonetic,pos,root,mnemonic,example,example_cn,deck\r\n"
+                + "unhappy,不快乐的，不高兴的,/ʌnˈhæpi/,adj.,un-+happy,un（不）+ happy（快乐）,She looks unhappy today.,她今天看起来不开心。,七年级上 Unit 3\r\n"
+                + "impossible,\"不可能的；\"\"绝不可能\"\"\",/ɪmˈpɒsəbl/,adj.,im-+poss,im（不） + poss（能够）,\"Nothing is impossible, if you try.\",只要尝试，没有不可能。,七年级上 Unit 3\r\n"
+            let r = try Importer.parse(text: quoted, fileName: "rootword-export.csv",
+                                       targetDeckID: deckID, targetDeckName: deckName, knownWords: [:])
+            let byText = Dictionary(r.words.map { ($0.text, $0) }, uniquingKeysWith: { a, _ in a })
+            let ok = r.words.count == 2
+                && byText["unhappy"]?.meaning == "不快乐的，不高兴的"
+                && byText["impossible"]?.meaning == "不可能的；\"绝不可能\""
+                && byText["impossible"]?.examples.first?.en == "Nothing is impossible, if you try."
+                && byText["unhappy"]?.examples.first?.cn == "她今天看起来不开心。"
+            note("导出 CSV 引号包裹回归", ok,
+                 "\(r.words.count) 词 / impossible.meaning=\(byText["impossible"]?.meaning ?? "-")")
+        } catch {
+            note("导出 CSV 引号包裹回归", false, "抛错：\(describe(error))")
+        }
+
         if failures.isEmpty {
-            print("[ImportSelfCheck] 全部通过（9 组场景）")
+            print("[ImportSelfCheck] 全部通过（10 组场景）")
         } else {
             print("[ImportSelfCheck] 失败 \(failures.count) 项：\(failures.joined(separator: "、"))")
         }

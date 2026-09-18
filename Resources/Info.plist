@@ -54,13 +54,12 @@
 		<string>arm64</string>
 	</array>
 
-	<!-- 界面：仅竖屏、仅浅色、无 storyboard（用 UILaunchScreen 走全屏） -->
+	<!-- 界面：仅竖屏、明暗跟随系统（文档 6.9：不锁定 UIUserInterfaceStyle，
+	     设置里也不提供切换）、无 storyboard（用 UILaunchScreen 走全屏） -->
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
-	<key>UIUserInterfaceStyle</key>
-	<string>Light</string>
 	<key>UILaunchScreen</key>
 	<dict/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
