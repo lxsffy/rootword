@@ -110,7 +110,7 @@ fi
 plutil -lint "$APP_BUNDLE/Info.plist" >/dev/null || { echo "✗ Info.plist 格式错误"; exit 1; }
 
 # 从 Info.plist 读版本号，用于 IPA 命名
-VERSION=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$APP_BUNDLE/Info.plist" 2>/dev/null || echo "1.0.0")
+VERSION=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$APP_BUNDLE/Info.plist" 2>/dev/null || echo "1.1.0")
 
 echo "✓ Bundle 组装完成：$APP_BUNDLE"
 ls -1 "$APP_BUNDLE" | sed 's/^/    /'

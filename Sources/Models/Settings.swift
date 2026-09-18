@@ -51,3 +51,29 @@ struct AppSettings: Codable, Equatable {
     var dailyNewText: String { "\(dailyNewLimit) 个" }
     var dailyReviewText: String { "\(dailyReviewLimit) 个" }
 }
+
+// MARK: - App 版本信息
+
+/// App 版本号的唯一读取入口：统一从 Info.plist 取值，
+/// 避免设置页页脚、关于页等处硬编码版本号造成"改一处漏一处"的版本漂移（文档 5.17 P17）。
+enum AppInfo {
+
+    /// 读取失败时的占位符（文档 5.17 规定显示 `—`）
+    static let unknown = "—"
+
+    /// 营销版本号，如 "1.1.0"
+    static var shortVersion: String {
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? unknown
+    }
+
+    /// 构建号，如 "2"
+    static var buildVersion: String {
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? unknown
+    }
+
+    /// 形如 "1.1.0 (2)"；两个字段都取不到时返回 "—"
+    static var versionDisplay: String {
+        guard shortVersion != unknown || buildVersion != unknown else { return unknown }
+        return "\(shortVersion) (\(buildVersion))"
+    }
+}

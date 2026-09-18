@@ -50,7 +50,7 @@ struct SettingsView: View {
                 accentCard
                 dataCard
 
-                Text("RootWord 1.0.0 · 本地存储，无账号")
+                Text("RootWord \(AppInfo.shortVersion) · 本地存储，无账号")
                     .dsFont(size: 12)
                     .foregroundColor(.textTertiary)
                     .frame(maxWidth: .infinity)

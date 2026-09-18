@@ -793,7 +793,7 @@ P10 单词详情 → 底部"加入学习队列"按钮 → Toast"已加入今日�
 
 ## 5.17 P17 关于
 
-- **布局**：图标 + 名称 + 版本号（`1.0.0 (1)`）+ 三行说明："本 App 使用 SM-2 间隔重复算法变体""词根数据为本地内置，不联网""图标来自 Apple SF Symbols 与 Lucide（ISC 许可）"+ 一行免责声明"学习数据仅存储在本机，卸载即丢失，建议定期导出备份"。
+- **布局**：图标 + 名称 + 版本号（`1.1.0 (2)`，运行时从 Info.plist 读取）+ 三行说明："本 App 使用 SM-2 间隔重复算法变体""词根数据为本地内置，不联网""图标来自 Apple SF Symbols 与 Lucide（ISC 许可）"+ 一行免责声明"学习数据仅存储在本机，卸载即丢失，建议定期导出备份"。
 - **状态**：默认 / 版本号读取失败（显示 `—`）。
 - **交互**：点"查看算法说明"→ 内嵌展开（不跳页），展示第 7 章的公式。
 
@@ -1489,8 +1489,8 @@ Preview
     <key>CFBundleInfoDictionaryVersion</key><string>6.0</string>
     <key>CFBundleName</key><string>$(PRODUCT_NAME)</string>
     <key>CFBundlePackageType</key><string>APPL</string>
-    <key>CFBundleShortVersionString</key><string>1.0.0</string>
-    <key>CFBundleVersion</key><string>1</string>
+    <key>CFBundleShortVersionString</key><string>1.1.0</string>
+    <key>CFBundleVersion</key><string>2</string>
 
     <!-- 空字典即可；禁止嵌套子键（Xcode 16 自动生成 bug 的坑） -->
     <key>UILaunchScreen</key>

@@ -252,7 +252,7 @@ struct AboutView: View {
                 SectionCard(title: "版本") {
                     VStack(alignment: .leading, spacing: Sp.x2) {
                         rule("名称", "RootWord · 词根单词")
-                        rule("版本", "1.0.0")
+                        rule("版本", AppInfo.versionDisplay)
                         rule("系统要求", "iOS 15.4 及以上")
                     }
                 }
