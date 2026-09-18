@@ -33,6 +33,7 @@ struct RootWordApp: App {
         // 文档 7.7：算法与解析器的自检用例（仅在 DEBUG 构建执行）
         SRSchedulerSelfCheck.run()
         RootParserSelfCheck.run()
+        ImportSelfCheck.run()
         #endif
     }
 

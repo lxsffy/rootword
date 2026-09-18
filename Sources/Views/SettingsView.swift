@@ -9,13 +9,38 @@
 
 import SwiftUI
 import UIKit
+import UniformTypeIdentifiers
 
 struct SettingsView: View {
 
     @EnvironmentObject private var state: AppState
 
-    @State private var shareURL: URL?
-    @State private var showShare = false
+    // 设置页需要两个 sheet：分享备份 / 选备份文件。挂两个 sheet 到同一视图会互相遮蔽
+    // （第一次呈现容易空白），所以统一由一个 item 驱动。
+    private enum SettingsSheet: Identifiable {
+        case share(URL)
+        case restorePicker
+
+        var id: String {
+            switch self {
+            case .share(let url): return "share-\(url.absoluteString)"
+            case .restorePicker:  return "restore-picker"
+            }
+        }
+    }
+
+    @State private var activeSheet: SettingsSheet?
+    /// 已通过校验、等待用户二次确认的备份
+    @State private var pendingBackup: Store.BackupFile?
+    @State private var pendingBackupName = ""
+    @State private var restoreFailure: String?
+
+    private static let backupDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "zh_CN")
+        formatter.dateFormat = "yyyy-MM-dd HH:mm"
+        return formatter
+    }()
 
     var body: some View {
         ScrollView {
@@ -37,10 +62,21 @@ struct SettingsView: View {
         .background(PageBackground())
         .navigationTitle("设置")
         .navigationBarTitleDisplayMode(.inline)
-        .sheet(isPresented: $showShare) {
-            if let url = shareURL {
+        .sheet(item: $activeSheet) { sheet in
+            switch sheet {
+            case .share(let url):
                 ShareSheet(items: [url])
+            case .restorePicker:
+                DocumentPicker(allowed: [UTType.json, UTType.data]) { url in
+                    handlePickedBackup(url)
+                }
             }
+        }
+        .alert(isPresented: Binding(get: { restoreFailure != nil },
+                                    set: { if !$0 { restoreFailure = nil } })) {
+            Alert(title: Text("无法从备份恢复"),
+                  message: Text(restoreFailure ?? ""),
+                  dismissButton: .default(Text("知道了")))
         }
     }
 
@@ -227,14 +263,25 @@ struct SettingsView: View {
                 VStack(spacing: 0) {
                     actionRow(symbol: "square.and.arrow.up",
                               title: "导出备份",
-                              detail: "生成 JSON 文件，可存到「文件」App",
+                              detail: "生成 JSON 备份，可在「文件」App 的「背多分」文件夹里找到",
                               color: .brand500) {
-                        if let url = state.exportBackup() {
-                            shareURL = url
-                            showShare = true
+                        let outcome = state.exportBackup()
+                        if let url = outcome.url {
+                            activeSheet = .share(url)
                         } else {
-                            state.showToast("导出失败，请稍后重试", icon: "xmark.circle.fill", isError: true)
+                            state.showToast(outcome.error ?? "导出失败，请稍后重试",
+                                            icon: "xmark.circle.fill",
+                                            isError: true)
                         }
+                    }
+
+                    Divider().padding(.leading, 44)
+
+                    actionRow(symbol: "square.and.arrow.down",
+                              title: "从备份导入",
+                              detail: "选择 rootword-backup-*.json，覆盖当前全部数据",
+                              color: .warning500) {
+                        activeSheet = .restorePicker
                     }
 
                     Divider().padding(.leading, 44)
@@ -285,12 +332,68 @@ struct SettingsView: View {
                         destructive: true,
                         requiresTyping: "清空",
                         action: {
-                            state.wipeAllData()
-                            state.showToast("已清空所有数据")
+                            if state.wipeAllData() {
+                                state.showToast("已清空所有数据，清空前备份已存入「文件」App")
+                            } else {
+                                state.showToast("已清空数据，但清空前备份没能生成",
+                                                icon: "exclamationmark.triangle.fill",
+                                                isError: true)
+                            }
                         }))
                 }
             }
         }
+    }
+
+    // MARK: - 从备份恢复
+
+    /// 选到备份文件后：先只读校验一遍（格式 / 版本 / 内容），
+    /// 校验通过再弹二次确认——避免用户在确认框里点了「覆盖」，之后才发现文件不可用。
+    private func handlePickedBackup(_ url: URL) {
+        do {
+            let backup = try state.readBackup(from: url)
+            pendingBackup = backup
+            pendingBackupName = url.lastPathComponent
+
+            // 等文件选择器完全收起再弹确认框，否则弹窗会被 sheet 盖住
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                guard let pending = pendingBackup else { return }
+                ConfirmCenter.shared.ask(ConfirmRequest(
+                    title: "用备份覆盖当前数据？",
+                    message: confirmMessage(for: pending),
+                    confirmTitle: "覆盖并恢复",
+                    destructive: true,
+                    requiresTyping: "恢复",
+                    action: { applyPendingRestore() }))
+            }
+        } catch {
+            pendingBackup = nil
+            restoreFailure = describeBackupError(error)
+        }
+    }
+
+    private func confirmMessage(for backup: Store.BackupFile) -> String {
+        let exportedAt = Self.backupDateFormatter.string(from: backup.exportedAt)
+        return """
+        备份：\(pendingBackupName)（\(exportedAt) 导出）
+        恢复后可得到 \(backup.words.count) 个单词、\(backup.decks.count) 个词单、\(backup.logs.count) 条复习记录。
+
+        当前设备上的 \(state.words.count) 个单词、\(state.decks.count) 个词单、\(state.logs.count) 条复习记录与全部设置都会被这份备份替换，此操作不可撤销。
+        """
+    }
+
+    private func applyPendingRestore() {
+        guard let backup = pendingBackup else { return }
+        state.restoreBackup(backup)
+        pendingBackup = nil
+        state.showToast("已从备份恢复 \(backup.words.count) 个单词")
+    }
+
+    private func describeBackupError(_ error: Error) -> String {
+        guard let localized = error as? LocalizedError else { return error.localizedDescription }
+        let description = localized.errorDescription ?? error.localizedDescription
+        guard let suggestion = localized.recoverySuggestion, !suggestion.isEmpty else { return description }
+        return "\(description)\n\(suggestion)"
     }
 
     private func actionRow(symbol: String,

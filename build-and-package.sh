@@ -145,7 +145,7 @@ PAYLOAD="$BUILD_DIR/Payload"
 mkdir -p "$PAYLOAD"
 cp -R "$APP_BUNDLE" "$PAYLOAD/"
 
-IPA_PATH="$BUILD_DIR/${APP_NAME}-${VERSION}.ipa"
+IPA_PATH="$BUILD_DIR/${APP_NAME}-${VERSION}.tipa"
 (cd "$BUILD_DIR" && zip -qry "$(basename "$IPA_PATH")" Payload)
 rm -rf "$PAYLOAD"
 

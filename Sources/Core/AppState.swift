@@ -431,9 +431,6 @@ final class AppState: ObservableObject {
         let start = (words.filter { $0.deckID == deckID }.map { $0.position }.max() ?? -1) + 1
         let newWords = Importer.makeWords(from: result, deckID: deckID, startPosition: start, now: now)
         words.append(contentsOf: newWords)
-        if let index = decks.firstIndex(where: { $0.id == deckID }), decks[index].name.isEmpty == false {
-            // 词单数量变化由 UI 自行刷新
-        }
         persist(sync: true)
         refreshPlan()
     }
@@ -458,13 +455,48 @@ final class AppState: ObservableObject {
         refreshPlan()
     }
 
-    func exportBackup() -> URL? {
-        store.exportBackup(words: words, decks: decks, logs: logs, settings: settings)
+    /// 导出备份：成功返回文件 URL；失败返回 nil 并带回可直接展示的原因
+    /// （旧实现只返回 URL?，失败时 UI 只能给一句笼统的「导出失败」，用户不知道发生了什么）
+    func exportBackup() -> (url: URL?, error: String?) {
+        let url = store.exportBackup(words: words, decks: decks, logs: logs, settings: settings)
+        return (url, url == nil ? (store.lastWriteError ?? "导出失败，请稍后重试") : nil)
     }
 
-    /// 清空全部数据（先自动备份，再清空 —— 文档 5.13）
-    func wipeAllData() {
-        _ = store.autoBackupBeforeWipe(words: words, decks: decks, logs: logs, settings: settings)
+    // MARK: - 从备份恢复（P18 数据管理）
+
+    /// 只读校验备份文件，不改动任何现有数据。供 UI 在二次确认前展示
+    /// 「备份里有什么、会覆盖掉什么」。
+    func readBackup(from url: URL) throws -> Store.BackupFile {
+        try store.importBackup(from: url)
+    }
+
+    /// 用备份**覆盖**当前全部数据（破坏性操作，调用前必须已完成二次确认）。
+    /// 恢复后同步刷新内存状态、落盘并重建今日队列，保证界面立刻反映备份内容。
+    func restoreBackup(_ backup: Store.BackupFile) {
+        // 先做数据体检（补词单 / 修「当前词单」不变量 / 收拢孤儿单词），再整体覆盖
+        let restored = backup.sanitizedForRestore()
+
+        words = restored.words
+        decks = restored.decks
+        logs = restored.logs
+        settings = restored.settings
+        settings.normalize()
+        // 备份可能是很久以前的：恢复不该把已经在用 App 的用户踢回引导页
+        settings.hasCompletedOnboarding = true
+        Haptics.enabled = settings.hapticEnabled
+
+        store.persistSync(words: words, decks: decks, logs: logs, settings: settings)
+        // 会话与结算页里可能还挂着旧单词的 id，必须清掉再重建队列
+        session = nil
+        lastSummary = nil
+        refreshPlan()
+    }
+
+    /// 清空全部数据（先自动备份，再清空 —— 文档 5.13）。
+    /// - Returns: 自动备份是否成功落盘；失败时由 UI 明确提示「数据已清空但没留下备份」。
+    @discardableResult
+    func wipeAllData() -> Bool {
+        let backupURL = store.autoBackupBeforeWipe(words: words, decks: decks, logs: logs, settings: settings)
         words = []
         decks = []
         logs = []
@@ -474,6 +506,7 @@ final class AppState: ObservableObject {
         createSeedContent()
         persist(sync: true)
         refreshPlan()
+        return backupURL != nil
     }
 
     func clearHistory() {
