@@ -1,0 +1,40 @@
+# ===== macOS =====
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.Spotlight-V100
+.Trashes
+
+# ===== Xcode 构建产物 =====
+build/
+DerivedData/
+*.app
+*.dSYM
+*.ipa
+*.tipa
+*.xcarchive
+*.hmap
+*.moved-aside
+Index.noindex/
+*.noindex/
+
+# ===== Xcode 本地用户数据（不进版本库） =====
+xcuserdata/
+*.xcuserdata/
+*.xcuserstate
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+
+# ===== Swift Package Manager =====
+.build/
+.swiftpm/
+Packages/
+
+# ===== 其他临时文件 =====
+*.swp
+*.orig
+*.rej
+*~
