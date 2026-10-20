@@ -1,17 +1,6 @@
-\---  
-AIGC:  
-    Label: "1"  
-    ContentProducer: 001191440300708461136T1XGW3  
-    ProduceID: d08810df37746fbf6c9181f5580a2793_c698431bccb911f1b76f525400638852  
-    ReservedCode1: nqDrqC6//oM31trLDmk3fIhNChD02tKqL6q5WFscz/OUPhTqRJldUSQafRREtOqLHu6wv58Pt+cgSmpJ92TMIXz6RffngtXmYOz+1N90fhu3M2IhKXVKROYyPO1dQz1SWqlVRuIm/5liXpUhQlV906Mhna7Zu9a/OQwSOF4JcidG9fCyXOZPrdDmkec=  
-    ContentPropagator: 001191440300708461136T1XGW3  
-    PropagateID: d08810df37746fbf6c9181f5580a2793_c698431bccb911f1b76f525400638852  
-    ReservedCode2: nqDrqC6//oM31trLDmk3fIhNChD02tKqL6q5WFscz/OUPhTqRJldUSQafRREtOqLHu6wv58Pt+cgSmpJ92TMIXz6RffngtXmYOz+1N90fhu3M2IhKXVKROYyPO1dQz1SWqlVRuIm/5liXpUhQlV906Mhna7Zu9a/OQwSOF4JcidG9fCyXOZPrdDmkec=  
-\---
-
 # RootWord · 词根单词
 
-> 一款**原生 SwiftUI** 的 iOS 背单词 App：以词根词缀拆解为核心，内置 **OCR 拍照识别导入**、**EC Dictionary 离线词典校验纠错**与 **77 万词条大词库选词**。使用 `swiftc` 直接编译，无需 Xcode 工程依赖，可打包为 **.tipa** 通过 **TrollStore（巨魔）** 免签名安装。
+> 一款**原生 SwiftUI** 的 iOS 背单词 App：以词根词缀拆解为核心，内置 **OCR 拍照识别导入**、**EC Dictionary 离线词典校验纠错**与 **77 万词条大词库选词**。使用 `swiftc` 直接编译，无需 Xcode 工程依赖，可打包为 **.tipa** 通过TrollStore自签名安装。
 
 ![platform](https://img.shields.io/badge/platform-iOS%2015.4%20%7C%20arm64-blue)
 
