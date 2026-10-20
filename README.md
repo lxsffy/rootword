@@ -1,9 +1,22 @@
+\---  
+AIGC:  
+    Label: "1"  
+    ContentProducer: 001191440300708461136T1XGW3  
+    ProduceID: d08810df37746fbf6c9181f5580a2793_c698431bccb911f1b76f525400638852  
+    ReservedCode1: nqDrqC6//oM31trLDmk3fIhNChD02tKqL6q5WFscz/OUPhTqRJldUSQafRREtOqLHu6wv58Pt+cgSmpJ92TMIXz6RffngtXmYOz+1N90fhu3M2IhKXVKROYyPO1dQz1SWqlVRuIm/5liXpUhQlV906Mhna7Zu9a/OQwSOF4JcidG9fCyXOZPrdDmkec=  
+    ContentPropagator: 001191440300708461136T1XGW3  
+    PropagateID: d08810df37746fbf6c9181f5580a2793_c698431bccb911f1b76f525400638852  
+    ReservedCode2: nqDrqC6//oM31trLDmk3fIhNChD02tKqL6q5WFscz/OUPhTqRJldUSQafRREtOqLHu6wv58Pt+cgSmpJ92TMIXz6RffngtXmYOz+1N90fhu3M2IhKXVKROYyPO1dQz1SWqlVRuIm/5liXpUhQlV906Mhna7Zu9a/OQwSOF4JcidG9fCyXOZPrdDmkec=  
+\---
+
 # RootWord · 词根单词
 
 > 一款**原生 SwiftUI** 的 iOS 背单词 App：以词根词缀拆解为核心，内置 **OCR 拍照识别导入**、**EC Dictionary 离线词典校验纠错**与 **77 万词条大词库选词**。使用 `swiftc` 直接编译，无需 Xcode 工程依赖，可打包为 **.tipa** 通过 **TrollStore（巨魔）** 免签名安装。
 
 ![platform](https://img.shields.io/badge/platform-iOS%2015.4%20%7C%20arm64-blue)
+
 ![build](https://img.shields.io/badge/build-swiftc%20%2F%20no%20Xcode-orange)
+
 ![license](https://img.shields.io/badge/license-MIT-green)
 
 ---
@@ -21,15 +34,15 @@ App 同时提供两条高效的**导入词库路径**：
 
 ## 核心功能
 
-| 功能 | 说明 |
-|---|---|
-| **词根背单词** | 词根词缀拆解 + 派生词成组学习，内置词根词缀库（RootLibrary.json） |
-| **OCR 拍照识别导入** | Vision 双 Pass OCR（中文优先保释义、英文优先提单词），行聚类解析为「单词 + 释义」，结果可逐行修正后导入 |
+| 功能                       | 说明                                                                             |
+| ------------------------ | ------------------------------------------------------------------------------ |
+| **词根背单词**                | 词根词缀拆解 + 派生词成组学习，内置词根词缀库（RootLibrary.json）                                     |
+| **OCR 拍照识别导入**           | Vision 双 Pass OCR（中文优先保释义、英文优先提单词），行聚类解析为「单词 + 释义」，结果可逐行修正后导入                  |
 | **EC Dictionary 词典校验纠错** | 内置离线词库三层校验：① 存在性 ② 常用度（考试词表 / 词频）③ 释义一致性（CJK 重叠率）；可疑词标 ⚠、生僻词标 ?，附编辑距离 ≤ 2 候选提示 |
-| **大词库选词** | 按前缀实时浏览 77 万词条中的常用词，勾选批量导入，自动去重 |
-| **SRS 间隔复习** | 基于记忆曲线的调度复习，进度本地持久化 |
-| **TTS 朗读** | 本地语音合成朗读单词，无需网络 |
-| **灵活导入** | 支持粘贴文本 / 文件（txt、csv、json）/ 示例模板三种来源，导入前去重、预览确认 |
+| **大词库选词**                | 按前缀实时浏览 77 万词条中的常用词，勾选批量导入，自动去重                                                |
+| **SRS 间隔复习**             | 基于记忆曲线的调度复习，进度本地持久化                                                            |
+| **TTS 朗读**               | 本地语音合成朗读单词，无需网络                                                                |
+| **灵活导入**                 | 支持粘贴文本 / 文件（txt、csv、json）/ 示例模板三种来源，导入前去重、预览确认                                 |
 
 ## 技术栈与兼容性
 
@@ -53,10 +66,10 @@ bash build-and-package.sh --app-only
 
 **产物说明**
 
-| 产物 | 路径 | 说明 |
-|---|---|---|
-| App Bundle | `build/RootWord.app` | 已组装完整、ad-hoc 签名的应用包 |
-| 安装包 | `build/RootWord-<版本号>.tipa` | TrollStore 直接安装的压缩包（含 Payload/RootWord.app） |
+| 产物         | 路径                          | 说明                                          |
+| ---------- | --------------------------- | ------------------------------------------- |
+| App Bundle | `build/RootWord.app`        | 已组装完整、ad-hoc 签名的应用包                         |
+| 安装包        | `build/RootWord-<版本号>.tipa` | TrollStore 直接安装的压缩包（含 Payload/RootWord.app） |
 
 打包的 `.tipa` 已内置 **ecdict_light.tsv 大词库（约 36MB）**，最终安装包约 15MB。
 
@@ -125,4 +138,11 @@ rootword/
 
 ## 许可证
 
-MIT License。词库数据来源于 ECDICT（其本身亦开放使用，请遵守其许可证）。
+本项目采用 **MIT License**，详见 [LICENSE](LICENSE) 文件。
+
+```text
+MIT License
+Copyright (c) 2026 lxsffy
+```
+
+词库数据来源于 [ECDICT](https://github.com/skywind3000/ECDICT)（开源英汉词典数据库，其本身亦开放使用，请遵守其许可证）。
