@@ -1,0 +1,2758 @@
+[
+  {
+    "id": "un",
+    "form": "un-",
+    "normalized": "un",
+    "type": "prefix",
+    "meaning": "不、否定",
+    "origin": "古英语 un-",
+    "note": "加在形容词前表示相反的意思",
+    "examples": [
+      "unhappy",
+      "unusual",
+      "unlock"
+    ]
+  },
+  {
+    "id": "in",
+    "form": "in-",
+    "normalized": "in",
+    "type": "prefix",
+    "meaning": "不、无；进入",
+    "origin": "拉丁语 in-",
+    "note": "在 l 前变 il-，在 r 前变 ir-，在 m/p/b 前变 im-",
+    "examples": [
+      "incorrect",
+      "invisible",
+      "indoor"
+    ]
+  },
+  {
+    "id": "im",
+    "form": "im-",
+    "normalized": "im",
+    "type": "prefix",
+    "meaning": "不、无",
+    "origin": "拉丁语 in- 的变体",
+    "note": "只出现在 m / p / b 前",
+    "examples": [
+      "impossible",
+      "impatient",
+      "impolite"
+    ]
+  },
+  {
+    "id": "il",
+    "form": "il-",
+    "normalized": "il",
+    "type": "prefix",
+    "meaning": "不、无",
+    "origin": "拉丁语 in- 的变体",
+    "note": "只出现在 l 前",
+    "examples": [
+      "illegal",
+      "illiterate"
+    ]
+  },
+  {
+    "id": "ir",
+    "form": "ir-",
+    "normalized": "ir",
+    "type": "prefix",
+    "meaning": "不、无",
+    "origin": "拉丁语 in- 的变体",
+    "note": "只出现在 r 前",
+    "examples": [
+      "irregular",
+      "irresponsible"
+    ]
+  },
+  {
+    "id": "dis",
+    "form": "dis-",
+    "normalized": "dis",
+    "type": "prefix",
+    "meaning": "不、相反；分开",
+    "origin": "拉丁语 dis-",
+    "note": "既可表否定，也可表「分开、散开」",
+    "examples": [
+      "dislike",
+      "disagree",
+      "discover"
+    ]
+  },
+  {
+    "id": "non",
+    "form": "non-",
+    "normalized": "non",
+    "type": "prefix",
+    "meaning": "非、不是",
+    "origin": "拉丁语 non",
+    "note": "语气比 un- 更中性，多用于名词或形容词",
+    "examples": [
+      "nonsense",
+      "nonstop"
+    ]
+  },
+  {
+    "id": "mis",
+    "form": "mis-",
+    "normalized": "mis",
+    "type": "prefix",
+    "meaning": "错误地、坏地",
+    "origin": "古英语 mis-",
+    "note": "常与动词连用，表示「做错」",
+    "examples": [
+      "mistake",
+      "misunderstand",
+      "misspell"
+    ]
+  },
+  {
+    "id": "anti",
+    "form": "anti-",
+    "normalized": "anti",
+    "type": "prefix",
+    "meaning": "反对、抗",
+    "origin": "希腊语 anti",
+    "note": "科学词汇里常见",
+    "examples": [
+      "antibiotic",
+      "antiwar"
+    ]
+  },
+  {
+    "id": "de",
+    "form": "de-",
+    "normalized": "de",
+    "type": "prefix",
+    "meaning": "向下；去除；相反",
+    "origin": "拉丁语 de-",
+    "note": "方向感很强的前缀",
+    "examples": [
+      "decrease",
+      "defrost",
+      "depart"
+    ]
+  },
+  {
+    "id": "re",
+    "form": "re-",
+    "normalized": "re",
+    "type": "prefix",
+    "meaning": "再一次；回来",
+    "origin": "拉丁语 re-",
+    "note": "出现频率最高的前缀之一",
+    "examples": [
+      "repeat",
+      "return",
+      "review"
+    ]
+  },
+  {
+    "id": "pre",
+    "form": "pre-",
+    "normalized": "pre",
+    "type": "prefix",
+    "meaning": "在前、预先",
+    "origin": "拉丁语 prae-",
+    "note": "与 post- 相对",
+    "examples": [
+      "preview",
+      "prepare",
+      "prehistory"
+    ]
+  },
+  {
+    "id": "post",
+    "form": "post-",
+    "normalized": "post",
+    "type": "prefix",
+    "meaning": "在后、之后",
+    "origin": "拉丁语 post",
+    "note": "多用于时间顺序",
+    "examples": [
+      "postpone",
+      "postwar"
+    ]
+  },
+  {
+    "id": "pro",
+    "form": "pro-",
+    "normalized": "pro",
+    "type": "prefix",
+    "meaning": "向前；支持",
+    "origin": "拉丁语 pro",
+    "note": "方向 + 立场两种含义",
+    "examples": [
+      "progress",
+      "promote",
+      "protect"
+    ]
+  },
+  {
+    "id": "ex",
+    "form": "ex-",
+    "normalized": "ex",
+    "type": "prefix",
+    "meaning": "向外；前任",
+    "origin": "拉丁语 ex",
+    "note": "ex- 后接辅音时也写作 e-",
+    "examples": [
+      "exit",
+      "export",
+      "ex-wife"
+    ]
+  },
+  {
+    "id": "sub",
+    "form": "sub-",
+    "normalized": "sub",
+    "type": "prefix",
+    "meaning": "在下面；次级",
+    "origin": "拉丁语 sub-",
+    "note": "在 c/f/g/p 前会变形（suc/suf/sug/sup）",
+    "examples": [
+      "subway",
+      "submarine",
+      "subject"
+    ]
+  },
+  {
+    "id": "super",
+    "form": "super-",
+    "normalized": "super",
+    "type": "prefix",
+    "meaning": "在上面；超过",
+    "origin": "拉丁语 super",
+    "note": "与 sub- 相对",
+    "examples": [
+      "supermarket",
+      "supernatural"
+    ]
+  },
+  {
+    "id": "sur",
+    "form": "sur-",
+    "normalized": "sur",
+    "type": "prefix",
+    "meaning": "在上面；超过",
+    "origin": "法语 sur",
+    "note": "来自拉丁语 super 的法语形式",
+    "examples": [
+      "surface",
+      "surprise",
+      "survive"
+    ]
+  },
+  {
+    "id": "over",
+    "form": "over-",
+    "normalized": "over",
+    "type": "prefix",
+    "meaning": "过度；在上面",
+    "origin": "古英语 ofer",
+    "note": "既是前缀也是独立介词",
+    "examples": [
+      "overwork",
+      "overcome",
+      "overlook"
+    ]
+  },
+  {
+    "id": "under",
+    "form": "under-",
+    "normalized": "under",
+    "type": "prefix",
+    "meaning": "不足；在下面",
+    "origin": "古英语 under",
+    "note": "常表「低于标准」",
+    "examples": [
+      "underestimate",
+      "underground"
+    ]
+  },
+  {
+    "id": "inter",
+    "form": "inter-",
+    "normalized": "inter",
+    "type": "prefix",
+    "meaning": "在…之间；相互",
+    "origin": "拉丁语 inter",
+    "note": "international 的经典前缀",
+    "examples": [
+      "international",
+      "internet",
+      "interact"
+    ]
+  },
+  {
+    "id": "trans",
+    "form": "trans-",
+    "normalized": "trans",
+    "type": "prefix",
+    "meaning": "穿过；转移",
+    "origin": "拉丁语 trans",
+    "note": "表示跨越",
+    "examples": [
+      "transport",
+      "translate",
+      "transmit"
+    ]
+  },
+  {
+    "id": "tele",
+    "form": "tele-",
+    "normalized": "tele",
+    "type": "prefix",
+    "meaning": "远",
+    "origin": "希腊语 tele",
+    "note": "远程类词汇",
+    "examples": [
+      "television",
+      "telephone",
+      "telescope"
+    ]
+  },
+  {
+    "id": "auto",
+    "form": "auto-",
+    "normalized": "auto",
+    "type": "prefix",
+    "meaning": "自己、自动",
+    "origin": "希腊语 autos",
+    "note": "「自己动」的构词逻辑",
+    "examples": [
+      "automatic",
+      "autograph",
+      "autobiography"
+    ]
+  },
+  {
+    "id": "bi",
+    "form": "bi-",
+    "normalized": "bi",
+    "type": "prefix",
+    "meaning": "二、双",
+    "origin": "拉丁语 bi-",
+    "note": "数字前缀",
+    "examples": [
+      "bicycle",
+      "bilingual"
+    ]
+  },
+  {
+    "id": "tri",
+    "form": "tri-",
+    "normalized": "tri",
+    "type": "prefix",
+    "meaning": "三",
+    "origin": "拉丁语 tri-",
+    "note": "数字前缀",
+    "examples": [
+      "triangle",
+      "tricycle"
+    ]
+  },
+  {
+    "id": "multi",
+    "form": "multi-",
+    "normalized": "multi",
+    "type": "prefix",
+    "meaning": "多",
+    "origin": "拉丁语 multus",
+    "note": "数字/数量前缀",
+    "examples": [
+      "multimedia",
+      "multicultural"
+    ]
+  },
+  {
+    "id": "mono",
+    "form": "mono-",
+    "normalized": "mono",
+    "type": "prefix",
+    "meaning": "单一",
+    "origin": "希腊语 monos",
+    "note": "与 multi- 相对",
+    "examples": [
+      "monologue",
+      "monopoly"
+    ]
+  },
+  {
+    "id": "uni",
+    "form": "uni-",
+    "normalized": "uni",
+    "type": "prefix",
+    "meaning": "一、单一",
+    "origin": "拉丁语 unus",
+    "note": "universe 的核心就是 uni",
+    "examples": [
+      "uniform",
+      "unique",
+      "unite"
+    ]
+  },
+  {
+    "id": "semi",
+    "form": "semi-",
+    "normalized": "semi",
+    "type": "prefix",
+    "meaning": "半",
+    "origin": "拉丁语 semi",
+    "note": "semifinal 的 semi",
+    "examples": [
+      "semifinal",
+      "semicircle"
+    ]
+  },
+  {
+    "id": "micro",
+    "form": "micro-",
+    "normalized": "micro",
+    "type": "prefix",
+    "meaning": "微小",
+    "origin": "希腊语 mikros",
+    "note": "与 macro- 相对",
+    "examples": [
+      "microscope",
+      "microphone"
+    ]
+  },
+  {
+    "id": "macro",
+    "form": "macro-",
+    "normalized": "macro",
+    "type": "prefix",
+    "meaning": "大、宏观",
+    "origin": "希腊语 makros",
+    "note": "多用于学术词",
+    "examples": [
+      "macroeconomics"
+    ]
+  },
+  {
+    "id": "co",
+    "form": "co-",
+    "normalized": "co",
+    "type": "prefix",
+    "meaning": "共同",
+    "origin": "拉丁语 cum",
+    "note": "com- 的简化形式，出现在元音前",
+    "examples": [
+      "cooperate",
+      "coexist"
+    ]
+  },
+  {
+    "id": "com",
+    "form": "com-",
+    "normalized": "com",
+    "type": "prefix",
+    "meaning": "共同、一起",
+    "origin": "拉丁语 cum",
+    "note": "在 l 前变 col-，在 r 前变 cor-",
+    "examples": [
+      "connect",
+      "combine",
+      "company"
+    ]
+  },
+  {
+    "id": "ad",
+    "form": "ad-",
+    "normalized": "ad",
+    "type": "prefix",
+    "meaning": "向、朝向",
+    "origin": "拉丁语 ad",
+    "note": "在辅音前会变成 ac/af/al/ap/ar/as/at 等",
+    "examples": [
+      "adapt",
+      "advance",
+      "admit"
+    ]
+  },
+  {
+    "id": "ab",
+    "form": "ab-",
+    "normalized": "ab",
+    "type": "prefix",
+    "meaning": "离开、脱离",
+    "origin": "拉丁语 ab",
+    "note": "与 ad- 方向相反",
+    "examples": [
+      "absent",
+      "abnormal"
+    ]
+  },
+  {
+    "id": "circum",
+    "form": "circum-",
+    "normalized": "circum",
+    "type": "prefix",
+    "meaning": "环绕",
+    "origin": "拉丁语 circum",
+    "note": "= 圆圈 + 走",
+    "examples": [
+      "circumstance",
+      "circumference"
+    ]
+  },
+  {
+    "id": "contra",
+    "form": "contra-",
+    "normalized": "contra",
+    "type": "prefix",
+    "meaning": "相反",
+    "origin": "拉丁语 contra",
+    "note": "与 counter- 同源",
+    "examples": [
+      "contradict",
+      "contrary"
+    ]
+  },
+  {
+    "id": "counter",
+    "form": "counter-",
+    "normalized": "counter",
+    "type": "prefix",
+    "meaning": "反对、对抗",
+    "origin": "法语 contre",
+    "note": "多用于动作类名词",
+    "examples": [
+      "counterattack"
+    ]
+  },
+  {
+    "id": "fore",
+    "form": "fore-",
+    "normalized": "fore",
+    "type": "prefix",
+    "meaning": "在前、预先",
+    "origin": "古英语 fore",
+    "note": "与 before 同源",
+    "examples": [
+      "forecast",
+      "forehead",
+      "foresee"
+    ]
+  },
+  {
+    "id": "hyper",
+    "form": "hyper-",
+    "normalized": "hyper",
+    "type": "prefix",
+    "meaning": "过度、超",
+    "origin": "希腊语 hyper",
+    "note": "医学与网络词汇常见",
+    "examples": [
+      "hyperactive",
+      "hyperlink"
+    ]
+  },
+  {
+    "id": "en",
+    "form": "en-",
+    "normalized": "en",
+    "type": "prefix",
+    "meaning": "使…；进入",
+    "origin": "法语 en-",
+    "note": "在 p/b/m 前变 em-",
+    "examples": [
+      "enable",
+      "enlarge",
+      "enrich"
+    ]
+  },
+  {
+    "id": "em",
+    "form": "em-",
+    "normalized": "em",
+    "type": "prefix",
+    "meaning": "使…；进入",
+    "origin": "法语 en- 的变体",
+    "note": "只出现在 p / b / m 前",
+    "examples": [
+      "empower",
+      "embrace",
+      "embody"
+    ]
+  },
+  {
+    "id": "extra",
+    "form": "extra-",
+    "normalized": "extra",
+    "type": "prefix",
+    "meaning": "在…之外、额外",
+    "origin": "拉丁语 extra",
+    "note": "extraterrestrial 的 extra",
+    "examples": [
+      "extraordinary",
+      "extract"
+    ]
+  },
+  {
+    "id": "out",
+    "form": "out-",
+    "normalized": "out",
+    "type": "prefix",
+    "meaning": "向外、超过",
+    "origin": "古英语 ut",
+    "note": "与 in- 相对",
+    "examples": [
+      "outdoor",
+      "outstanding",
+      "outrun"
+    ]
+  },
+  {
+    "id": "up",
+    "form": "up-",
+    "normalized": "up",
+    "type": "prefix",
+    "meaning": "向上",
+    "origin": "古英语 up",
+    "note": "方向前缀",
+    "examples": [
+      "upgrade",
+      "upset",
+      "uphold"
+    ]
+  },
+  {
+    "id": "with",
+    "form": "with-",
+    "normalized": "with",
+    "type": "prefix",
+    "meaning": "向后、相反",
+    "origin": "古英语 wið",
+    "note": "withdraw 里的 with 是「向回」",
+    "examples": [
+      "withdraw",
+      "withstand"
+    ]
+  },
+  {
+    "id": "spect",
+    "form": "spect",
+    "normalized": "spect",
+    "type": "root",
+    "meaning": "看",
+    "origin": "拉丁语 specere",
+    "note": "spect 家族极庞大：看的方式不同，词义不同",
+    "examples": [
+      "inspect",
+      "respect",
+      "spectator"
+    ]
+  },
+  {
+    "id": "port",
+    "form": "port",
+    "normalized": "port",
+    "type": "root",
+    "meaning": "携带、搬运",
+    "origin": "拉丁语 portare",
+    "note": "把人或物从一处带到另一处",
+    "examples": [
+      "import",
+      "export",
+      "transport"
+    ]
+  },
+  {
+    "id": "dict",
+    "form": "dict",
+    "normalized": "dict",
+    "type": "root",
+    "meaning": "说、断言",
+    "origin": "拉丁语 dicere",
+    "note": "说出来的话",
+    "examples": [
+      "predict",
+      "dictionary",
+      "contradict"
+    ]
+  },
+  {
+    "id": "duc",
+    "form": "duc",
+    "normalized": "duc",
+    "type": "root",
+    "meaning": "引导",
+    "origin": "拉丁语 ducere",
+    "note": "duct 是它的过去分词形式",
+    "examples": [
+      "produce",
+      "reduce",
+      "introduce"
+    ]
+  },
+  {
+    "id": "duct",
+    "form": "duct",
+    "normalized": "duct",
+    "type": "root",
+    "meaning": "引导",
+    "origin": "拉丁语 ducere",
+    "note": "与 duc 同一家族",
+    "examples": [
+      "conduct",
+      "product",
+      "education"
+    ]
+  },
+  {
+    "id": "ject",
+    "form": "ject",
+    "normalized": "ject",
+    "type": "root",
+    "meaning": "投、掷",
+    "origin": "拉丁语 jacere",
+    "note": "把东西扔出去",
+    "examples": [
+      "project",
+      "reject",
+      "inject"
+    ]
+  },
+  {
+    "id": "mit",
+    "form": "mit",
+    "normalized": "mit",
+    "type": "root",
+    "meaning": "送、放",
+    "origin": "拉丁语 mittere",
+    "note": "miss 是它的变体",
+    "examples": [
+      "admit",
+      "submit",
+      "permit"
+    ]
+  },
+  {
+    "id": "miss",
+    "form": "miss",
+    "normalized": "miss",
+    "type": "root",
+    "meaning": "送、放",
+    "origin": "拉丁语 mittere",
+    "note": "与 mit 同一家族",
+    "examples": [
+      "mission",
+      "permission",
+      "dismiss"
+    ]
+  },
+  {
+    "id": "scrib",
+    "form": "scrib",
+    "normalized": "scrib",
+    "type": "root",
+    "meaning": "写",
+    "origin": "拉丁语 scribere",
+    "note": "script 是它的变体",
+    "examples": [
+      "describe",
+      "subscribe"
+    ]
+  },
+  {
+    "id": "script",
+    "form": "script",
+    "normalized": "script",
+    "type": "root",
+    "meaning": "写",
+    "origin": "拉丁语 scribere",
+    "note": "与 scrib 同一家族",
+    "examples": [
+      "manuscript",
+      "prescription"
+    ]
+  },
+  {
+    "id": "tract",
+    "form": "tract",
+    "normalized": "tract",
+    "type": "root",
+    "meaning": "拉、拖",
+    "origin": "拉丁语 trahere",
+    "note": "拉向不同方向就有不同含义",
+    "examples": [
+      "attract",
+      "extract",
+      "tractor"
+    ]
+  },
+  {
+    "id": "vert",
+    "form": "vert",
+    "normalized": "vert",
+    "type": "root",
+    "meaning": "转",
+    "origin": "拉丁语 vertere",
+    "note": "vers 是它的变体",
+    "examples": [
+      "convert",
+      "revert",
+      "advertise"
+    ]
+  },
+  {
+    "id": "vers",
+    "form": "vers",
+    "normalized": "vers",
+    "type": "root",
+    "meaning": "转",
+    "origin": "拉丁语 vertere",
+    "note": "与 vert 同一家族",
+    "examples": [
+      "reverse",
+      "universe",
+      "diverse"
+    ]
+  },
+  {
+    "id": "vid",
+    "form": "vid",
+    "normalized": "vid",
+    "type": "root",
+    "meaning": "看",
+    "origin": "拉丁语 videre",
+    "note": "vis 是它的变体",
+    "examples": [
+      "video",
+      "provide",
+      "evidence"
+    ]
+  },
+  {
+    "id": "vis",
+    "form": "vis",
+    "normalized": "vis",
+    "type": "root",
+    "meaning": "看",
+    "origin": "拉丁语 videre",
+    "note": "与 vid 同一家族",
+    "examples": [
+      "visible",
+      "television",
+      "revise"
+    ]
+  },
+  {
+    "id": "voc",
+    "form": "voc",
+    "normalized": "voc",
+    "type": "root",
+    "meaning": "叫、声音",
+    "origin": "拉丁语 vocare",
+    "note": "vok 是它的变体",
+    "examples": [
+      "vocal",
+      "vocabulary",
+      "advocate"
+    ]
+  },
+  {
+    "id": "bio",
+    "form": "bio",
+    "normalized": "bio",
+    "type": "root",
+    "meaning": "生命",
+    "origin": "希腊语 bios",
+    "note": "生物类词汇的起点",
+    "examples": [
+      "biology",
+      "biography"
+    ]
+  },
+  {
+    "id": "chron",
+    "form": "chron",
+    "normalized": "chron",
+    "type": "root",
+    "meaning": "时间",
+    "origin": "希腊语 chronos",
+    "note": "时间轴上的顺序",
+    "examples": [
+      "chronic",
+      "synchronize"
+    ]
+  },
+  {
+    "id": "cred",
+    "form": "cred",
+    "normalized": "cred",
+    "type": "root",
+    "meaning": "相信",
+    "origin": "拉丁语 credere",
+    "note": "信则真",
+    "examples": [
+      "credit",
+      "incredible",
+      "credible"
+    ]
+  },
+  {
+    "id": "cycl",
+    "form": "cycl",
+    "normalized": "cycl",
+    "type": "root",
+    "meaning": "圆、环",
+    "origin": "希腊语 kyklos",
+    "note": "转到原点的循环",
+    "examples": [
+      "bicycle",
+      "recycle",
+      "cyclone"
+    ]
+  },
+  {
+    "id": "fac",
+    "form": "fac",
+    "normalized": "fac",
+    "type": "root",
+    "meaning": "做、制造",
+    "origin": "拉丁语 facere",
+    "note": "fect / fic 是它的变体",
+    "examples": [
+      "factory",
+      "difficult",
+      "manufacture"
+    ]
+  },
+  {
+    "id": "fect",
+    "form": "fect",
+    "normalized": "fect",
+    "type": "root",
+    "meaning": "做、制造",
+    "origin": "拉丁语 facere",
+    "note": "与 fac 同一家族",
+    "examples": [
+      "perfect",
+      "effect",
+      "infect"
+    ]
+  },
+  {
+    "id": "fer",
+    "form": "fer",
+    "normalized": "fer",
+    "type": "root",
+    "meaning": "带来、拿",
+    "origin": "拉丁语 ferre",
+    "note": "把东西带过来",
+    "examples": [
+      "offer",
+      "prefer",
+      "transfer"
+    ]
+  },
+  {
+    "id": "fid",
+    "form": "fid",
+    "normalized": "fid",
+    "type": "root",
+    "meaning": "信任",
+    "origin": "拉丁语 fides",
+    "note": "信心相关",
+    "examples": [
+      "confident",
+      "fidelity"
+    ]
+  },
+  {
+    "id": "form",
+    "form": "form",
+    "normalized": "form",
+    "type": "root",
+    "meaning": "形状、形成",
+    "origin": "拉丁语 forma",
+    "note": "给事物塑形",
+    "examples": [
+      "uniform",
+      "reform",
+      "inform"
+    ]
+  },
+  {
+    "id": "gen",
+    "form": "gen",
+    "normalized": "gen",
+    "type": "root",
+    "meaning": "产生、种类",
+    "origin": "拉丁语 genus",
+    "note": "生出来的东西",
+    "examples": [
+      "generate",
+      "generation",
+      "genius"
+    ]
+  },
+  {
+    "id": "geo",
+    "form": "geo",
+    "normalized": "geo",
+    "type": "root",
+    "meaning": "地、地球",
+    "origin": "希腊语 ge",
+    "note": "地球相关词汇",
+    "examples": [
+      "geography",
+      "geology"
+    ]
+  },
+  {
+    "id": "graph",
+    "form": "graph",
+    "normalized": "graph",
+    "type": "root",
+    "meaning": "写、画",
+    "origin": "希腊语 graphein",
+    "note": "写下来的东西",
+    "examples": [
+      "photograph",
+      "paragraph",
+      "geography"
+    ]
+  },
+  {
+    "id": "gress",
+    "form": "gress",
+    "normalized": "gress",
+    "type": "root",
+    "meaning": "走",
+    "origin": "拉丁语 gradi",
+    "note": "一步步前进",
+    "examples": [
+      "progress",
+      "congress",
+      "aggressive"
+    ]
+  },
+  {
+    "id": "log",
+    "form": "log",
+    "normalized": "log",
+    "type": "root",
+    "meaning": "言语、学科",
+    "origin": "希腊语 logos",
+    "note": "说话与研究",
+    "examples": [
+      "dialogue",
+      "biology",
+      "apology"
+    ]
+  },
+  {
+    "id": "manu",
+    "form": "manu",
+    "normalized": "manu",
+    "type": "root",
+    "meaning": "手",
+    "origin": "拉丁语 manus",
+    "note": "手上的动作",
+    "examples": [
+      "manual",
+      "manufacture",
+      "manuscript"
+    ]
+  },
+  {
+    "id": "man",
+    "form": "man",
+    "normalized": "man",
+    "type": "root",
+    "meaning": "手",
+    "origin": "拉丁语 manus",
+    "note": "与 manu 同一家族",
+    "examples": [
+      "manage",
+      "manicure"
+    ]
+  },
+  {
+    "id": "mar",
+    "form": "mar",
+    "normalized": "mar",
+    "type": "root",
+    "meaning": "海",
+    "origin": "拉丁语 mare",
+    "note": "海洋相关",
+    "examples": [
+      "marine",
+      "submarine",
+      "maritime"
+    ]
+  },
+  {
+    "id": "meter",
+    "form": "meter",
+    "normalized": "meter",
+    "type": "root",
+    "meaning": "测量",
+    "origin": "希腊语 metron",
+    "note": "metr 是它的变体",
+    "examples": [
+      "thermometer",
+      "centimeter"
+    ]
+  },
+  {
+    "id": "metr",
+    "form": "metr",
+    "normalized": "metr",
+    "type": "root",
+    "meaning": "测量",
+    "origin": "希腊语 metron",
+    "note": "与 meter 同一家族",
+    "examples": [
+      "geometry",
+      "metric"
+    ]
+  },
+  {
+    "id": "mob",
+    "form": "mob",
+    "normalized": "mob",
+    "type": "root",
+    "meaning": "移动",
+    "origin": "拉丁语 movere",
+    "note": "mot / mov 是它的变体",
+    "examples": [
+      "mobile",
+      "automobile",
+      "motor"
+    ]
+  },
+  {
+    "id": "mot",
+    "form": "mot",
+    "normalized": "mot",
+    "type": "root",
+    "meaning": "移动",
+    "origin": "拉丁语 movere",
+    "note": "与 mob 同一家族",
+    "examples": [
+      "motion",
+      "motivate",
+      "promote"
+    ]
+  },
+  {
+    "id": "mort",
+    "form": "mort",
+    "normalized": "mort",
+    "type": "root",
+    "meaning": "死",
+    "origin": "拉丁语 mors",
+    "note": "mortal 与 immortal",
+    "examples": [
+      "mortal",
+      "immortal"
+    ]
+  },
+  {
+    "id": "nat",
+    "form": "nat",
+    "normalized": "nat",
+    "type": "root",
+    "meaning": "出生",
+    "origin": "拉丁语 nasci",
+    "note": "生下来的",
+    "examples": [
+      "nature",
+      "nation",
+      "native"
+    ]
+  },
+  {
+    "id": "nom",
+    "form": "nom",
+    "normalized": "nom",
+    "type": "root",
+    "meaning": "名字",
+    "origin": "希腊语/拉丁语 nomen",
+    "note": "name 的远亲",
+    "examples": [
+      "nominate",
+      "synonym"
+    ]
+  },
+  {
+    "id": "ped",
+    "form": "ped",
+    "normalized": "ped",
+    "type": "root",
+    "meaning": "脚；儿童",
+    "origin": "拉丁语 pes / 希腊语 pais",
+    "note": "两个来源：脚（pes）与儿童（pais）",
+    "examples": [
+      "pedal",
+      "pedestrian",
+      "pediatric"
+    ]
+  },
+  {
+    "id": "pel",
+    "form": "pel",
+    "normalized": "pel",
+    "type": "root",
+    "meaning": "推、驱使",
+    "origin": "拉丁语 pellere",
+    "note": "puls 是它的变体",
+    "examples": [
+      "expel",
+      "repel",
+      "compel"
+    ]
+  },
+  {
+    "id": "puls",
+    "form": "puls",
+    "normalized": "puls",
+    "type": "root",
+    "meaning": "推、驱使",
+    "origin": "拉丁语 pellere",
+    "note": "与 pel 同一家族",
+    "examples": [
+      "impulse",
+      "pulse",
+      "compulsory"
+    ]
+  },
+  {
+    "id": "pend",
+    "form": "pend",
+    "normalized": "pend",
+    "type": "root",
+    "meaning": "悬挂、称量",
+    "origin": "拉丁语 pendere",
+    "note": "pens 是它的变体",
+    "examples": [
+      "depend",
+      "suspend",
+      "pendulum"
+    ]
+  },
+  {
+    "id": "pens",
+    "form": "pens",
+    "normalized": "pens",
+    "type": "root",
+    "meaning": "悬挂、称量",
+    "origin": "拉丁语 pendere",
+    "note": "与 pend 同一家族",
+    "examples": [
+      "expensive",
+      "dispense"
+    ]
+  },
+  {
+    "id": "phon",
+    "form": "phon",
+    "normalized": "phon",
+    "type": "root",
+    "meaning": "声音",
+    "origin": "希腊语 phone",
+    "note": "与声音有关",
+    "examples": [
+      "telephone",
+      "symphony",
+      "phonetic"
+    ]
+  },
+  {
+    "id": "photo",
+    "form": "photo",
+    "normalized": "photo",
+    "type": "root",
+    "meaning": "光",
+    "origin": "希腊语 phos",
+    "note": "光的图像",
+    "examples": [
+      "photograph",
+      "photosynthesis"
+    ]
+  },
+  {
+    "id": "pon",
+    "form": "pon",
+    "normalized": "pon",
+    "type": "root",
+    "meaning": "放置",
+    "origin": "拉丁语 ponere",
+    "note": "pos 是它的变体",
+    "examples": [
+      "component",
+      "opponent"
+    ]
+  },
+  {
+    "id": "pos",
+    "form": "pos",
+    "normalized": "pos",
+    "type": "root",
+    "meaning": "放置",
+    "origin": "拉丁语 ponere",
+    "note": "与 pon 同一家族",
+    "examples": [
+      "position",
+      "compose",
+      "deposit"
+    ]
+  },
+  {
+    "id": "popul",
+    "form": "popul",
+    "normalized": "popul",
+    "type": "root",
+    "meaning": "人民",
+    "origin": "拉丁语 populus",
+    "note": "人民的",
+    "examples": [
+      "population",
+      "popular"
+    ]
+  },
+  {
+    "id": "psych",
+    "form": "psych",
+    "normalized": "psych",
+    "type": "root",
+    "meaning": "心灵、精神",
+    "origin": "希腊语 psyche",
+    "note": "心理相关",
+    "examples": [
+      "psychology",
+      "psychic"
+    ]
+  },
+  {
+    "id": "rupt",
+    "form": "rupt",
+    "normalized": "rupt",
+    "type": "root",
+    "meaning": "破、断",
+    "origin": "拉丁语 rumpere",
+    "note": "断裂",
+    "examples": [
+      "interrupt",
+      "bankrupt",
+      "erupt"
+    ]
+  },
+  {
+    "id": "sci",
+    "form": "sci",
+    "normalized": "sci",
+    "type": "root",
+    "meaning": "知道",
+    "origin": "拉丁语 scire",
+    "note": "知道就是科学",
+    "examples": [
+      "science",
+      "conscious"
+    ]
+  },
+  {
+    "id": "sect",
+    "form": "sect",
+    "normalized": "sect",
+    "type": "root",
+    "meaning": "切、割",
+    "origin": "拉丁语 secare",
+    "note": "切开的一部分",
+    "examples": [
+      "section",
+      "insect",
+      "insecticide"
+    ]
+  },
+  {
+    "id": "sens",
+    "form": "sens",
+    "normalized": "sens",
+    "type": "root",
+    "meaning": "感觉",
+    "origin": "拉丁语 sentire",
+    "note": "sent 是它的变体",
+    "examples": [
+      "sense",
+      "sensitive",
+      "sensor"
+    ]
+  },
+  {
+    "id": "sent",
+    "form": "sent",
+    "normalized": "sent",
+    "type": "root",
+    "meaning": "感觉",
+    "origin": "拉丁语 sentire",
+    "note": "与 sens 同一家族",
+    "examples": [
+      "sentiment",
+      "consent"
+    ]
+  },
+  {
+    "id": "sequ",
+    "form": "sequ",
+    "normalized": "sequ",
+    "type": "root",
+    "meaning": "跟随",
+    "origin": "拉丁语 sequi",
+    "note": "跟在后面",
+    "examples": [
+      "sequence",
+      "consequence"
+    ]
+  },
+  {
+    "id": "serv",
+    "form": "serv",
+    "normalized": "serv",
+    "type": "root",
+    "meaning": "服务；保持",
+    "origin": "拉丁语 servire / servare",
+    "note": "两个来源：服侍与保存",
+    "examples": [
+      "service",
+      "preserve",
+      "reserve"
+    ]
+  },
+  {
+    "id": "sist",
+    "form": "sist",
+    "normalized": "sist",
+    "type": "root",
+    "meaning": "站立",
+    "origin": "拉丁语 sistere",
+    "note": "站在那里",
+    "examples": [
+      "insist",
+      "resist",
+      "assist"
+    ]
+  },
+  {
+    "id": "sol",
+    "form": "sol",
+    "normalized": "sol",
+    "type": "root",
+    "meaning": "单独；太阳",
+    "origin": "拉丁语 solus / sol",
+    "note": "两个来源：独自（solus）与太阳（sol）",
+    "examples": [
+      "solo",
+      "solitude",
+      "solar"
+    ]
+  },
+  {
+    "id": "son",
+    "form": "son",
+    "normalized": "son",
+    "type": "root",
+    "meaning": "声音",
+    "origin": "拉丁语 sonus",
+    "note": "发声",
+    "examples": [
+      "sound",
+      "resonance",
+      "sonic"
+    ]
+  },
+  {
+    "id": "spir",
+    "form": "spir",
+    "normalized": "spir",
+    "type": "root",
+    "meaning": "呼吸",
+    "origin": "拉丁语 spirare",
+    "note": "呼吸 = 生命",
+    "examples": [
+      "inspire",
+      "spirit",
+      "respire"
+    ]
+  },
+  {
+    "id": "struct",
+    "form": "struct",
+    "normalized": "struct",
+    "type": "root",
+    "meaning": "建造",
+    "origin": "拉丁语 struere",
+    "note": "搭起来",
+    "examples": [
+      "structure",
+      "construct",
+      "instruct"
+    ]
+  },
+  {
+    "id": "tain",
+    "form": "tain",
+    "normalized": "tain",
+    "type": "root",
+    "meaning": "持有",
+    "origin": "拉丁语 tenere",
+    "note": "ten 是它的变体",
+    "examples": [
+      "contain",
+      "maintain",
+      "obtain"
+    ]
+  },
+  {
+    "id": "ten",
+    "form": "ten",
+    "normalized": "ten",
+    "type": "root",
+    "meaning": "持有",
+    "origin": "拉丁语 tenere",
+    "note": "与 tain 同一家族",
+    "examples": [
+      "tenant",
+      "retention"
+    ]
+  },
+  {
+    "id": "tempor",
+    "form": "tempor",
+    "normalized": "tempor",
+    "type": "root",
+    "meaning": "时间",
+    "origin": "拉丁语 tempus",
+    "note": "时间的",
+    "examples": [
+      "temporary",
+      "contemporary"
+    ]
+  },
+  {
+    "id": "tend",
+    "form": "tend",
+    "normalized": "tend",
+    "type": "root",
+    "meaning": "伸展",
+    "origin": "拉丁语 tendere",
+    "note": "tens 是它的变体",
+    "examples": [
+      "extend",
+      "attend",
+      "tendency"
+    ]
+  },
+  {
+    "id": "tens",
+    "form": "tens",
+    "normalized": "tens",
+    "type": "root",
+    "meaning": "伸展",
+    "origin": "拉丁语 tendere",
+    "note": "与 tend 同一家族",
+    "examples": [
+      "tension",
+      "intense"
+    ]
+  },
+  {
+    "id": "terr",
+    "form": "terr",
+    "normalized": "terr",
+    "type": "root",
+    "meaning": "土地",
+    "origin": "拉丁语 terra",
+    "note": "土地相关",
+    "examples": [
+      "territory",
+      "terrain",
+      "terrace"
+    ]
+  },
+  {
+    "id": "therm",
+    "form": "therm",
+    "normalized": "therm",
+    "type": "root",
+    "meaning": "热",
+    "origin": "希腊语 thermos",
+    "note": "温度相关",
+    "examples": [
+      "thermometer",
+      "thermal"
+    ]
+  },
+  {
+    "id": "urb",
+    "form": "urb",
+    "normalized": "urb",
+    "type": "root",
+    "meaning": "城市",
+    "origin": "拉丁语 urbs",
+    "note": "城市相关",
+    "examples": [
+      "urban",
+      "suburb"
+    ]
+  },
+  {
+    "id": "vac",
+    "form": "vac",
+    "normalized": "vac",
+    "type": "root",
+    "meaning": "空",
+    "origin": "拉丁语 vacare",
+    "note": "空的",
+    "examples": [
+      "vacant",
+      "vacation",
+      "vacuum"
+    ]
+  },
+  {
+    "id": "ven",
+    "form": "ven",
+    "normalized": "ven",
+    "type": "root",
+    "meaning": "来",
+    "origin": "拉丁语 venire",
+    "note": "vent 是它的变体",
+    "examples": [
+      "invent",
+      "prevent",
+      "convenient"
+    ]
+  },
+  {
+    "id": "vent",
+    "form": "vent",
+    "normalized": "vent",
+    "type": "root",
+    "meaning": "来",
+    "origin": "拉丁语 venire",
+    "note": "与 ven 同一家族",
+    "examples": [
+      "event",
+      "adventure"
+    ]
+  },
+  {
+    "id": "ver",
+    "form": "ver",
+    "normalized": "ver",
+    "type": "root",
+    "meaning": "真实",
+    "origin": "拉丁语 verus",
+    "note": "真的",
+    "examples": [
+      "verify",
+      "very",
+      "verdict"
+    ]
+  },
+  {
+    "id": "viv",
+    "form": "viv",
+    "normalized": "viv",
+    "type": "root",
+    "meaning": "活、生命",
+    "origin": "拉丁语 vivere",
+    "note": "vit 是它的变体",
+    "examples": [
+      "survive",
+      "vivid",
+      "vivisection"
+    ]
+  },
+  {
+    "id": "vit",
+    "form": "vit",
+    "normalized": "vit",
+    "type": "root",
+    "meaning": "活、生命",
+    "origin": "拉丁语 vita",
+    "note": "与 viv 同一家族",
+    "examples": [
+      "vital",
+      "vitamin"
+    ]
+  },
+  {
+    "id": "vol",
+    "form": "vol",
+    "normalized": "vol",
+    "type": "root",
+    "meaning": "意愿",
+    "origin": "拉丁语 velle",
+    "note": "自愿",
+    "examples": [
+      "volunteer",
+      "voluntary"
+    ]
+  },
+  {
+    "id": "aud",
+    "form": "aud",
+    "normalized": "aud",
+    "type": "root",
+    "meaning": "听",
+    "origin": "拉丁语 audire",
+    "note": "听相关",
+    "examples": [
+      "audience",
+      "audio",
+      "auditorium"
+    ]
+  },
+  {
+    "id": "ann",
+    "form": "ann",
+    "normalized": "ann",
+    "type": "root",
+    "meaning": "年",
+    "origin": "拉丁语 annus",
+    "note": "enn 是它的变体",
+    "examples": [
+      "annual",
+      "anniversary"
+    ]
+  },
+  {
+    "id": "aqua",
+    "form": "aqua",
+    "normalized": "aqua",
+    "type": "root",
+    "meaning": "水",
+    "origin": "拉丁语 aqua",
+    "note": "水的",
+    "examples": [
+      "aquarium",
+      "aquatic"
+    ]
+  },
+  {
+    "id": "arch",
+    "form": "arch",
+    "normalized": "arch",
+    "type": "root",
+    "meaning": "统治；首",
+    "origin": "希腊语 archein",
+    "note": "统治或首要",
+    "examples": [
+      "monarch",
+      "architect"
+    ]
+  },
+  {
+    "id": "astro",
+    "form": "astro",
+    "normalized": "astro",
+    "type": "root",
+    "meaning": "星",
+    "origin": "希腊语 astron",
+    "note": "星空",
+    "examples": [
+      "astronaut",
+      "astronomy"
+    ]
+  },
+  {
+    "id": "brev",
+    "form": "brev",
+    "normalized": "brev",
+    "type": "root",
+    "meaning": "短",
+    "origin": "拉丁语 brevis",
+    "note": "简短",
+    "examples": [
+      "brief",
+      "brevity",
+      "abbreviate"
+    ]
+  },
+  {
+    "id": "cap",
+    "form": "cap",
+    "normalized": "cap",
+    "type": "root",
+    "meaning": "拿、抓；头",
+    "origin": "拉丁语 capere / caput",
+    "note": "capt 是它的变体，既可表「拿」，也可表「头」",
+    "examples": [
+      "capture",
+      "capital",
+      "capable"
+    ]
+  },
+  {
+    "id": "capt",
+    "form": "capt",
+    "normalized": "capt",
+    "type": "root",
+    "meaning": "拿、抓",
+    "origin": "拉丁语 capere",
+    "note": "与 cap 同一家族",
+    "examples": [
+      "captive",
+      "caption"
+    ]
+  },
+  {
+    "id": "ced",
+    "form": "ced",
+    "normalized": "ced",
+    "type": "root",
+    "meaning": "走、让",
+    "origin": "拉丁语 cedere",
+    "note": "cess 是它的变体",
+    "examples": [
+      "precede",
+      "proceed"
+    ]
+  },
+  {
+    "id": "cess",
+    "form": "cess",
+    "normalized": "cess",
+    "type": "root",
+    "meaning": "走、让",
+    "origin": "拉丁语 cedere",
+    "note": "与 ced 同一家族",
+    "examples": [
+      "process",
+      "success",
+      "access"
+    ]
+  },
+  {
+    "id": "cid",
+    "form": "cid",
+    "normalized": "cid",
+    "type": "root",
+    "meaning": "切、杀；落",
+    "origin": "拉丁语 caedere / cadere",
+    "note": "cis 是它的变体",
+    "examples": [
+      "decide",
+      "suicide",
+      "accident"
+    ]
+  },
+  {
+    "id": "civ",
+    "form": "civ",
+    "normalized": "civ",
+    "type": "root",
+    "meaning": "公民",
+    "origin": "拉丁语 civis",
+    "note": "市民相关",
+    "examples": [
+      "civil",
+      "civilization"
+    ]
+  },
+  {
+    "id": "clud",
+    "form": "clud",
+    "normalized": "clud",
+    "type": "root",
+    "meaning": "关闭",
+    "origin": "拉丁语 claudere",
+    "note": "clus 是它的变体",
+    "examples": [
+      "include",
+      "exclude",
+      "conclude"
+    ]
+  },
+  {
+    "id": "clus",
+    "form": "clus",
+    "normalized": "clus",
+    "type": "root",
+    "meaning": "关闭",
+    "origin": "拉丁语 claudere",
+    "note": "与 clud 同一家族",
+    "examples": [
+      "conclusion",
+      "exclusive"
+    ]
+  },
+  {
+    "id": "corp",
+    "form": "corp",
+    "normalized": "corp",
+    "type": "root",
+    "meaning": "身体",
+    "origin": "拉丁语 corpus",
+    "note": "身体或团体",
+    "examples": [
+      "corporation",
+      "corpse"
+    ]
+  },
+  {
+    "id": "cur",
+    "form": "cur",
+    "normalized": "cur",
+    "type": "root",
+    "meaning": "跑、关心",
+    "origin": "拉丁语 currere / cura",
+    "note": "curr / curs 是它的变体",
+    "examples": [
+      "current",
+      "occur",
+      "curious"
+    ]
+  },
+  {
+    "id": "curr",
+    "form": "curr",
+    "normalized": "curr",
+    "type": "root",
+    "meaning": "跑",
+    "origin": "拉丁语 currere",
+    "note": "与 cur 同一家族",
+    "examples": [
+      "curriculum",
+      "currency"
+    ]
+  },
+  {
+    "id": "dem",
+    "form": "dem",
+    "normalized": "dem",
+    "type": "root",
+    "meaning": "人民",
+    "origin": "希腊语 demos",
+    "note": "人民相关",
+    "examples": [
+      "democracy",
+      "epidemic"
+    ]
+  },
+  {
+    "id": "equ",
+    "form": "equ",
+    "normalized": "equ",
+    "type": "root",
+    "meaning": "相等",
+    "origin": "拉丁语 aequus",
+    "note": "相等",
+    "examples": [
+      "equal",
+      "equator",
+      "equipment"
+    ]
+  },
+  {
+    "id": "grat",
+    "form": "grat",
+    "normalized": "grat",
+    "type": "root",
+    "meaning": "感谢、取悦",
+    "origin": "拉丁语 gratus",
+    "note": "感激",
+    "examples": [
+      "grateful",
+      "congratulate",
+      "gratitude"
+    ]
+  },
+  {
+    "id": "loc",
+    "form": "loc",
+    "normalized": "loc",
+    "type": "root",
+    "meaning": "地方",
+    "origin": "拉丁语 locus",
+    "note": "位置相关",
+    "examples": [
+      "local",
+      "locate",
+      "dislocate"
+    ]
+  },
+  {
+    "id": "loqu",
+    "form": "loqu",
+    "normalized": "loqu",
+    "type": "root",
+    "meaning": "说",
+    "origin": "拉丁语 loqui",
+    "note": "讲话",
+    "examples": [
+      "eloquent",
+      "soliloquy"
+    ]
+  },
+  {
+    "id": "luc",
+    "form": "luc",
+    "normalized": "luc",
+    "type": "root",
+    "meaning": "光",
+    "origin": "拉丁语 lux",
+    "note": "明亮",
+    "examples": [
+      "translucent",
+      "lucid"
+    ]
+  },
+  {
+    "id": "mem",
+    "form": "mem",
+    "normalized": "mem",
+    "type": "root",
+    "meaning": "记忆",
+    "origin": "拉丁语 memor",
+    "note": "记住",
+    "examples": [
+      "memory",
+      "memorize",
+      "commemorate"
+    ]
+  },
+  {
+    "id": "min",
+    "form": "min",
+    "normalized": "min",
+    "type": "root",
+    "meaning": "小；突出",
+    "origin": "拉丁语 minus / minere",
+    "note": "小或少",
+    "examples": [
+      "minimum",
+      "minor",
+      "diminish"
+    ]
+  },
+  {
+    "id": "nov",
+    "form": "nov",
+    "normalized": "nov",
+    "type": "root",
+    "meaning": "新",
+    "origin": "拉丁语 novus",
+    "note": "新的",
+    "examples": [
+      "novel",
+      "innovate",
+      "renovate"
+    ]
+  },
+  {
+    "id": "patr",
+    "form": "patr",
+    "normalized": "patr",
+    "type": "root",
+    "meaning": "父亲",
+    "origin": "拉丁语 pater",
+    "note": "父系相关",
+    "examples": [
+      "patriot",
+      "patron"
+    ]
+  },
+  {
+    "id": "path",
+    "form": "path",
+    "normalized": "path",
+    "type": "root",
+    "meaning": "感觉、疾病",
+    "origin": "希腊语 pathos",
+    "note": "感受与病痛",
+    "examples": [
+      "sympathy",
+      "pathology"
+    ]
+  },
+  {
+    "id": "reg",
+    "form": "reg",
+    "normalized": "reg",
+    "type": "root",
+    "meaning": "统治、规则",
+    "origin": "拉丁语 rex",
+    "note": "统治与规则",
+    "examples": [
+      "regular",
+      "region",
+      "register"
+    ]
+  },
+  {
+    "id": "scend",
+    "form": "scend",
+    "normalized": "scend",
+    "type": "root",
+    "meaning": "爬",
+    "origin": "拉丁语 scandere",
+    "note": "向上爬",
+    "examples": [
+      "ascend",
+      "descend",
+      "transcend"
+    ]
+  },
+  {
+    "id": "spec",
+    "form": "spec",
+    "normalized": "spec",
+    "type": "root",
+    "meaning": "看",
+    "origin": "拉丁语 specere",
+    "note": "与 spect 同源",
+    "examples": [
+      "special",
+      "specimen",
+      "spectacle"
+    ]
+  },
+  {
+    "id": "sum",
+    "form": "sum",
+    "normalized": "sum",
+    "type": "root",
+    "meaning": "拿、取",
+    "origin": "拉丁语 sumere",
+    "note": "sumpt 是它的变体",
+    "examples": [
+      "consume",
+      "assume",
+      "resume"
+    ]
+  },
+  {
+    "id": "tact",
+    "form": "tact",
+    "normalized": "tact",
+    "type": "root",
+    "meaning": "接触",
+    "origin": "拉丁语 tangere",
+    "note": "触碰",
+    "examples": [
+      "contact",
+      "tactile"
+    ]
+  },
+  {
+    "id": "trib",
+    "form": "trib",
+    "normalized": "trib",
+    "type": "root",
+    "meaning": "给予、分配",
+    "origin": "拉丁语 tribuere",
+    "note": "给予",
+    "examples": [
+      "contribute",
+      "distribute",
+      "attribute"
+    ]
+  },
+  {
+    "id": "val",
+    "form": "val",
+    "normalized": "val",
+    "type": "root",
+    "meaning": "价值、强壮",
+    "origin": "拉丁语 valere",
+    "note": "有价值",
+    "examples": [
+      "value",
+      "valid",
+      "evaluate"
+    ]
+  },
+  {
+    "id": "var",
+    "form": "var",
+    "normalized": "var",
+    "type": "root",
+    "meaning": "变化",
+    "origin": "拉丁语 varius",
+    "note": "多样",
+    "examples": [
+      "various",
+      "variable",
+      "vary"
+    ]
+  },
+  {
+    "id": "via",
+    "form": "via",
+    "normalized": "via",
+    "type": "root",
+    "meaning": "路",
+    "origin": "拉丁语 via",
+    "note": "道路",
+    "examples": [
+      "via",
+      "obvious",
+      "previous"
+    ]
+  },
+  {
+    "id": "volv",
+    "form": "volv",
+    "normalized": "volv",
+    "type": "root",
+    "meaning": "滚、转",
+    "origin": "拉丁语 volvere",
+    "note": "volut 是它的变体",
+    "examples": [
+      "involve",
+      "revolve",
+      "evolve"
+    ]
+  },
+  {
+    "id": "vor",
+    "form": "vor",
+    "normalized": "vor",
+    "type": "root",
+    "meaning": "吃",
+    "origin": "拉丁语 vorare",
+    "note": "吞吃",
+    "examples": [
+      "carnivore",
+      "devour"
+    ]
+  },
+  {
+    "id": "tion",
+    "form": "-tion",
+    "normalized": "tion",
+    "type": "suffix",
+    "meaning": "名词：动作或状态",
+    "origin": "拉丁语 -tio",
+    "note": "最常见名词后缀，加在动词后",
+    "examples": [
+      "education",
+      "invention",
+      "action"
+    ]
+  },
+  {
+    "id": "sion",
+    "form": "-sion",
+    "normalized": "sion",
+    "type": "suffix",
+    "meaning": "名词：动作或状态",
+    "origin": "拉丁语 -sio",
+    "note": "接在 d/de 结尾的动词后",
+    "examples": [
+      "decision",
+      "conclusion"
+    ]
+  },
+  {
+    "id": "ment",
+    "form": "-ment",
+    "normalized": "ment",
+    "type": "suffix",
+    "meaning": "名词：结果或工具",
+    "origin": "拉丁语 -mentum",
+    "note": "动词变名词",
+    "examples": [
+      "movement",
+      "government",
+      "equipment"
+    ]
+  },
+  {
+    "id": "ness",
+    "form": "-ness",
+    "normalized": "ness",
+    "type": "suffix",
+    "meaning": "名词：性质",
+    "origin": "古英语 -nes",
+    "note": "形容词变名词",
+    "examples": [
+      "happiness",
+      "darkness"
+    ]
+  },
+  {
+    "id": "ity",
+    "form": "-ity",
+    "normalized": "ity",
+    "type": "suffix",
+    "meaning": "名词：性质",
+    "origin": "拉丁语 -itas",
+    "note": "形容词变抽象名词",
+    "examples": [
+      "reality",
+      "ability"
+    ]
+  },
+  {
+    "id": "ance",
+    "form": "-ance",
+    "normalized": "ance",
+    "type": "suffix",
+    "meaning": "名词：状态",
+    "origin": "拉丁语 -antia",
+    "note": "与 -ence 成对出现",
+    "examples": [
+      "importance",
+      "distance"
+    ]
+  },
+  {
+    "id": "ence",
+    "form": "-ence",
+    "normalized": "ence",
+    "type": "suffix",
+    "meaning": "名词：状态",
+    "origin": "拉丁语 -entia",
+    "note": "与 -ance 成对出现",
+    "examples": [
+      "difference",
+      "experience"
+    ]
+  },
+  {
+    "id": "er",
+    "form": "-er",
+    "normalized": "er",
+    "type": "suffix",
+    "meaning": "名词：人、物",
+    "origin": "古英语 -ere",
+    "note": "或表比较级",
+    "examples": [
+      "teacher",
+      "computer"
+    ]
+  },
+  {
+    "id": "or",
+    "form": "-or",
+    "normalized": "or",
+    "type": "suffix",
+    "meaning": "名词：人",
+    "origin": "拉丁语 -or",
+    "note": "做某动作的人",
+    "examples": [
+      "actor",
+      "visitor"
+    ]
+  },
+  {
+    "id": "ist",
+    "form": "-ist",
+    "normalized": "ist",
+    "type": "suffix",
+    "meaning": "名词：人",
+    "origin": "希腊语 -istes",
+    "note": "从事某职业或主张的人",
+    "examples": [
+      "artist",
+      "scientist"
+    ]
+  },
+  {
+    "id": "ology",
+    "form": "-ology",
+    "normalized": "ology",
+    "type": "suffix",
+    "meaning": "名词：学科",
+    "origin": "希腊语 -logia",
+    "note": "学科名称",
+    "examples": [
+      "biology",
+      "technology"
+    ]
+  },
+  {
+    "id": "ship",
+    "form": "-ship",
+    "normalized": "ship",
+    "type": "suffix",
+    "meaning": "名词：身份、关系",
+    "origin": "古英语 -scipe",
+    "note": "friend → friendship",
+    "examples": [
+      "friendship",
+      "leadership"
+    ]
+  },
+  {
+    "id": "hood",
+    "form": "-hood",
+    "normalized": "hood",
+    "type": "suffix",
+    "meaning": "名词：状态、时期",
+    "origin": "古英语 -had",
+    "note": "child → childhood",
+    "examples": [
+      "childhood",
+      "neighborhood"
+    ]
+  },
+  {
+    "id": "able",
+    "form": "-able",
+    "normalized": "able",
+    "type": "suffix",
+    "meaning": "形容词：能被…的",
+    "origin": "拉丁语 -abilis",
+    "note": "动词后",
+    "examples": [
+      "comfortable",
+      "possible"
+    ]
+  },
+  {
+    "id": "ible",
+    "form": "-ible",
+    "normalized": "ible",
+    "type": "suffix",
+    "meaning": "形容词：能被…的",
+    "origin": "拉丁语 -ibilis",
+    "note": "-able 的变体",
+    "examples": [
+      "visible",
+      "terrible"
+    ]
+  },
+  {
+    "id": "ive",
+    "form": "-ive",
+    "normalized": "ive",
+    "type": "suffix",
+    "meaning": "形容词：有…性质的",
+    "origin": "拉丁语 -ivus",
+    "note": "主动意味",
+    "examples": [
+      "active",
+      "creative"
+    ]
+  },
+  {
+    "id": "ous",
+    "form": "-ous",
+    "normalized": "ous",
+    "type": "suffix",
+    "meaning": "形容词：充满…的",
+    "origin": "拉丁语 -osus",
+    "note": "名词或词根后",
+    "examples": [
+      "famous",
+      "dangerous"
+    ]
+  },
+  {
+    "id": "ful",
+    "form": "-ful",
+    "normalized": "ful",
+    "type": "suffix",
+    "meaning": "形容词：充满…的",
+    "origin": "古英语 -ful",
+    "note": "与 -less 相对",
+    "examples": [
+      "helpful",
+      "beautiful"
+    ]
+  },
+  {
+    "id": "less",
+    "form": "-less",
+    "normalized": "less",
+    "type": "suffix",
+    "meaning": "形容词：没有…的",
+    "origin": "古英语 -leas",
+    "note": "与 -ful 相对",
+    "examples": [
+      "careless",
+      "hopeless"
+    ]
+  },
+  {
+    "id": "al",
+    "form": "-al",
+    "normalized": "al",
+    "type": "suffix",
+    "meaning": "形容词：与…有关的",
+    "origin": "拉丁语 -alis",
+    "note": "名词变形容词",
+    "examples": [
+      "natural",
+      "personal"
+    ]
+  },
+  {
+    "id": "ic",
+    "form": "-ic",
+    "normalized": "ic",
+    "type": "suffix",
+    "meaning": "形容词：…的",
+    "origin": "希腊语 -ikos",
+    "note": "学科类形容词",
+    "examples": [
+      "scientific",
+      "historic"
+    ]
+  },
+  {
+    "id": "ish",
+    "form": "-ish",
+    "normalized": "ish",
+    "type": "suffix",
+    "meaning": "形容词：有点…的",
+    "origin": "古英语 -isc",
+    "note": "弱化语气",
+    "examples": [
+      "childish",
+      "foolish"
+    ]
+  },
+  {
+    "id": "ly",
+    "form": "-ly",
+    "normalized": "ly",
+    "type": "suffix",
+    "meaning": "副词：以…方式",
+    "origin": "古英语 -lice",
+    "note": "形容词变副词",
+    "examples": [
+      "quickly",
+      "carefully"
+    ]
+  },
+  {
+    "id": "ize",
+    "form": "-ize",
+    "normalized": "ize",
+    "type": "suffix",
+    "meaning": "动词：使…化",
+    "origin": "希腊语 -izein",
+    "note": "名词或形容词变动词",
+    "examples": [
+      "realize",
+      "modernize"
+    ]
+  },
+  {
+    "id": "ify",
+    "form": "-ify",
+    "normalized": "ify",
+    "type": "suffix",
+    "meaning": "动词：使…",
+    "origin": "拉丁语 -ificare",
+    "note": "使成为",
+    "examples": [
+      "simplify",
+      "beautify"
+    ]
+  },
+  {
+    "id": "en-suffix",
+    "form": "-en",
+    "normalized": "en",
+    "type": "suffix",
+    "meaning": "动词：使…",
+    "origin": "古英语 -nian",
+    "note": "加在形容词后",
+    "examples": [
+      "strengthen",
+      "widen"
+    ]
+  },
+  {
+    "id": "ate",
+    "form": "-ate",
+    "normalized": "ate",
+    "type": "suffix",
+    "meaning": "动词/形容词",
+    "origin": "拉丁语 -atus",
+    "note": "常见动词结尾",
+    "examples": [
+      "create",
+      "separate"
+    ]
+  },
+  {
+    "id": "y",
+    "form": "-y",
+    "normalized": "y",
+    "type": "suffix",
+    "meaning": "形容词：多…的",
+    "origin": "古英语 -ig",
+    "note": "名词变形容词",
+    "examples": [
+      "rainy",
+      "sunny"
+    ]
+  },
+  {
+    "id": "ing",
+    "form": "-ing",
+    "normalized": "ing",
+    "type": "suffix",
+    "meaning": "名词/形容词：正在…",
+    "origin": "古英语 -ende",
+    "note": "动名词",
+    "examples": [
+      "running",
+      "interesting"
+    ]
+  },
+  {
+    "id": "ard",
+    "form": "-ard",
+    "normalized": "ard",
+    "type": "suffix",
+    "meaning": "名词：…的人（贬）",
+    "origin": "古德语 -hard",
+    "note": "多含贬义",
+    "examples": [
+      "drunkard",
+      "coward"
+    ]
+  },
+  {
+    "id": "ward",
+    "form": "-ward",
+    "normalized": "ward",
+    "type": "suffix",
+    "meaning": "副词：朝…方向",
+    "origin": "古英语 -weard",
+    "note": "方向",
+    "examples": [
+      "forward",
+      "backward"
+    ]
+  },
+  {
+    "id": "logy",
+    "form": "-logy",
+    "normalized": "logy",
+    "type": "suffix",
+    "meaning": "名词：学科",
+    "origin": "希腊语 -logia",
+    "note": "-ology 的简化形式",
+    "examples": [
+      "psychology",
+      "geology"
+    ]
+  },
+  {
+    "id": "phobia",
+    "form": "-phobia",
+    "normalized": "phobia",
+    "type": "suffix",
+    "meaning": "名词：恐惧症",
+    "origin": "希腊语 phobos",
+    "note": "心理类",
+    "examples": [
+      "claustrophobia"
+    ]
+  },
+  {
+    "id": "graphy",
+    "form": "-graphy",
+    "normalized": "graphy",
+    "type": "suffix",
+    "meaning": "名词：记录、学",
+    "origin": "希腊语 -graphia",
+    "note": "书写与描绘",
+    "examples": [
+      "photography",
+      "geography"
+    ]
+  },
+  {
+    "id": "scope",
+    "form": "-scope",
+    "normalized": "scope",
+    "type": "suffix",
+    "meaning": "名词：观察工具",
+    "origin": "希腊语 skopein",
+    "note": "观察的器具",
+    "examples": [
+      "microscope",
+      "telescope"
+    ]
+  },
+  {
+    "id": "happy",
+    "form": "happy",
+    "normalized": "happy",
+    "type": "root",
+    "meaning": "快乐",
+    "origin": "古诺尔斯语 happ（运气）",
+    "note": "有运气自然就快乐；hap 亦见于 happen",
+    "examples": [
+      "happy",
+      "unhappy",
+      "happiness",
+      "happen"
+    ]
+  },
+  {
+    "id": "poss",
+    "form": "poss",
+    "normalized": "poss",
+    "type": "root",
+    "meaning": "能够",
+    "origin": "拉丁语 posse（能够）",
+    "note": "possible 即「能够做到的」",
+    "examples": [
+      "possible",
+      "impossible",
+      "possibility",
+      "potential"
+    ]
+  },
+  {
+    "id": "teach",
+    "form": "teach",
+    "normalized": "teach",
+    "type": "root",
+    "meaning": "教导",
+    "origin": "古英语 tǣcan（示范、教导）",
+    "note": "由「示范」引申为「教」",
+    "examples": [
+      "teach",
+      "teacher",
+      "teaching"
+    ]
+  },
+  {
+    "id": "ional",
+    "form": "-ional",
+    "normalized": "ional",
+    "type": "suffix",
+    "meaning": "…的",
+    "origin": "拉丁语 -ionalis",
+    "note": "-ion + -al 的合成后缀，构成形容词",
+    "examples": [
+      "national",
+      "international",
+      "traditional"
+    ]
+  },
+  {
+    "id": "ator",
+    "form": "-ator",
+    "normalized": "ator",
+    "type": "suffix",
+    "meaning": "做…的人（或物）",
+    "origin": "拉丁语 -ator",
+    "note": "加在动词词根后表示施动者",
+    "examples": [
+      "spectator",
+      "creator",
+      "translator"
+    ]
+  }
+]
