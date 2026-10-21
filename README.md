@@ -1,25 +1,3 @@
----
-AIGC:
-    Label: "1"
-    ContentProducer: 001191440300708461136T1XGW3
-    ProduceID: d08810df37746fbf6c9181f5580a2793_95600475ccba11f1afbb52540064ee0f
-    ReservedCode1: aPHwcWQh3xQl233qa4dBF+THAgE8gCDUMRVupi8ng7wjwiqZee3HqZN8V9PbMusAe5XFrWiUhJE0QAKcaGwzcs6fG4nsqfcovAskkLgndC0T+YTdHSnqMfEKG437pwDtr7i78ur5WjB0che/MHxYJz09hgJjmm6rjGhTn+HWTGneYGGFVUrYaGwK2fU=
-    ContentPropagator: 001191440300708461136T1XGW3
-    PropagateID: d08810df37746fbf6c9181f5580a2793_95600475ccba11f1afbb52540064ee0f
-    ReservedCode2: aPHwcWQh3xQl233qa4dBF+THAgE8gCDUMRVupi8ng7wjwiqZee3HqZN8V9PbMusAe5XFrWiUhJE0QAKcaGwzcs6fG4nsqfcovAskkLgndC0T+YTdHSnqMfEKG437pwDtr7i78ur5WjB0che/MHxYJz09hgJjmm6rjGhTn+HWTGneYGGFVUrYaGwK2fU=
----
-
-\---  
-AIGC:  
-    Label: "1"  
-    ContentProducer: 001191440300708461136T1XGW3  
-    ProduceID: d08810df37746fbf6c9181f5580a2793_c698431bccb911f1b76f525400638852  
-    ReservedCode1: nqDrqC6//oM31trLDmk3fIhNChD02tKqL6q5WFscz/OUPhTqRJldUSQafRREtOqLHu6wv58Pt+cgSmpJ92TMIXz6RffngtXmYOz+1N90fhu3M2IhKXVKROYyPO1dQz1SWqlVRuIm/5liXpUhQlV906Mhna7Zu9a/OQwSOF4JcidG9fCyXOZPrdDmkec=  
-    ContentPropagator: 001191440300708461136T1XGW3  
-    PropagateID: d08810df37746fbf6c9181f5580a2793_c698431bccb911f1b76f525400638852  
-    ReservedCode2: nqDrqC6//oM31trLDmk3fIhNChD02tKqL6q5WFscz/OUPhTqRJldUSQafRREtOqLHu6wv58Pt+cgSmpJ92TMIXz6RffngtXmYOz+1N90fhu3M2IhKXVKROYyPO1dQz1SWqlVRuIm/5liXpUhQlV906Mhna7Zu9a/OQwSOF4JcidG9fCyXOZPrdDmkec=  
-\---
-
 # RootWord · 词根单词
 
 > 一款**原生 SwiftUI** 的 iOS 背单词 App：以词根词缀拆解为核心，内置 **OCR 拍照识别导入**、**EC Dictionary 离线词典校验纠错**与 **77 万词条大词库选词**。使用 `swiftc` 直接编译，无需 Xcode 工程依赖，可打包为 **.ipa** 通过 **AltStore 自签安装**（免费 Apple ID，7 天自动续签）。
