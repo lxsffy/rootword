@@ -88,6 +88,49 @@ echo "✓ 编译通过：$BUILD_DIR/$APP_NAME"
 # ---------------------------------------------------------------------------
 # 4. 组装 .app
 # ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# 4.1 版本号自动递增（防止同名覆盖）
+#    状态文件 scripts/build_version.txt 记录上次打包版本；首次无状态文件时
+#    以 Resources/Info.plist 的 CFBundleShortVersionString 为起始版本。
+#    每次打包 patch +1，patch 到 9 进位 minor（1.2.9 -> 1.3.0）；
+#    同步写回 Resources/Info.plist（ShortVersion = 新版本号，Build = 旧值 +1），
+#    保证 app 内版本号、产物文件名、下次递增基准三者一致。
+#    注意：状态文件不放 build/，因为每次构建会 rm -rf 整个 build/ 目录。
+# ---------------------------------------------------------------------------
+VERSION_FILE="$SCRIPT_DIR/scripts/build_version.txt"
+PLIST_SRC="$RES_DIR/Info.plist"
+mkdir -p "$SCRIPT_DIR/scripts"
+
+if [ -f "$VERSION_FILE" ]; then
+  LAST_VERSION="$(cat "$VERSION_FILE" | tr -d '[:space:]')"
+else
+  LAST_VERSION="$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$PLIST_SRC" 2>/dev/null || echo "1.0.0")"
+fi
+
+# 解析 X.Y.Z 并递增 patch；patch 到 9 后进位 minor（1.2.9 -> 1.3.0）
+MAJOR="${LAST_VERSION%%.*}"
+REST="${LAST_VERSION#*.}"
+MINOR="${REST%%.*}"
+PATCH="${REST##*.}"
+PATCH=$((PATCH + 1))
+if [ "$PATCH" -gt 9 ]; then
+  PATCH=0
+  MINOR=$((MINOR + 1))
+fi
+VERSION="$MAJOR.$MINOR.$PATCH"
+
+OLD_BUILD="$(/usr/libexec/PlistBuddy -c "Print :CFBundleVersion" "$PLIST_SRC" 2>/dev/null || echo "1")"
+NEW_BUILD=$((OLD_BUILD + 1))
+
+# 写回源 Info.plist（下次构建 cp 到 bundle 时自然带新版本）
+/usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" "$PLIST_SRC" 2>/dev/null \
+  || /usr/libexec/PlistBuddy -c "Add :CFBundleShortVersionString string $VERSION" "$PLIST_SRC"
+/usr/libexec/PlistBuddy -c "Set :CFBundleVersion $NEW_BUILD" "$PLIST_SRC" 2>/dev/null \
+  || /usr/libexec/PlistBuddy -c "Add :CFBundleVersion string $NEW_BUILD" "$PLIST_SRC"
+
+echo "$VERSION" > "$VERSION_FILE"
+echo "==> 版本号自动递增：$LAST_VERSION -> $VERSION（build $NEW_BUILD，状态：$VERSION_FILE）"
+
 echo "==> 组装 App Bundle"
 
 APP_BUNDLE="$BUILD_DIR/$APP_NAME.app"

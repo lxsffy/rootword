@@ -64,13 +64,20 @@ enum ECDictValidator {
     private static var _firstIndex: [Character: [String]] = [:]  // 常用词按首字母索引
 
     /// 默认从 Bundle.main 读取 ecdict_light.tsv；自测脚本可传绝对路径覆盖
+    ///
+    /// 加载优化（36MB / 77 万词条）：
+    ///  · 手动 \n 切行（零拷贝 Substring 游标遍历，不再生成 77 万行的全量 [Substring] 数组）
+    ///  · firstIndex 精确定位前 3 个 \t（替代每行再 split 生成中间数组）
+    ///  · 预分配 80 万容量（防字典扩容时的整体复制峰值）
     static func loadDict(from fileURL: URL? = nil) -> [String: DictEntry] {
         lock.lock()
         defer { lock.unlock() }
         if let d = _dict { return d }
 
         var d: [String: DictEntry] = [:]
+        d.reserveCapacity(800_000)
         var firstIdx: [Character: [String]] = [:]
+        firstIdx.reserveCapacity(32)
 
         let url: URL
         if let f = fileURL {
@@ -85,18 +92,45 @@ enum ECDictValidator {
             _dict = d
             return d
         }
-        for line in content.split(separator: "\n", omittingEmptySubsequences: true) {
-            let parts = line.split(separator: "\t", omittingEmptySubsequences: false)
-            guard parts.count >= 4 else { continue }
-            let w = String(parts[0])
-            let e = DictEntry(tag: String(parts[1]),
-                              frq: Int(String(parts[2])) ?? 0,
-                              translation: String(parts[3]))
-            d[w] = e
-            if e.isCommon, let f = w.first {
-                firstIdx[f, default: []].append(w)
+
+        // 手动按 \n 切行：每次只保留当前行的 Substring（零拷贝），不构建全量行数组
+        var lineStart = content.startIndex
+        while lineStart < content.endIndex {
+            let nl = content[lineStart...].firstIndex(of: "\n") ?? content.endIndex
+            var lineEnd = nl
+            if lineEnd > lineStart {
+                let prev = content.index(before: lineEnd)
+                if content[prev] == "\r" { lineEnd = prev }   // 兼容 \r\n
             }
+
+            if lineEnd > lineStart {
+                let line = content[lineStart..<lineEnd]
+                // firstIndex 依次定位前 3 个 \t（第 4 列即 translation，取到行尾）
+                if let t1 = line.firstIndex(of: "\t") {
+                    let after1 = line.index(after: t1)
+                    if let t2 = line[after1...].firstIndex(of: "\t") {
+                        let after2 = line.index(after: t2)
+                        if let t3 = line[after2...].firstIndex(of: "\t") {
+                            let w = String(line[line.startIndex..<t1])
+                            let tag = String(line[after1..<t2])
+                            let frqStr = String(line[after2..<t3])
+                            let translation = String(line[line.index(after: t3)...])
+                            let e = DictEntry(tag: tag,
+                                              frq: Int(frqStr) ?? 0,
+                                              translation: translation)
+                            d[w] = e
+                            if e.isCommon, let f = w.first {
+                                firstIdx[f, default: []].append(w)
+                            }
+                        }
+                    }
+                }
+            }
+
+            if nl == content.endIndex { break }
+            lineStart = content.index(after: nl)
         }
+
         // 首字母桶排序，供「大词库选词」前缀浏览直接使用
         for (k, v) in firstIdx { firstIdx[k] = v.sorted() }
         _dict = d

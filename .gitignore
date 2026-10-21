@@ -42,6 +42,9 @@ Packages/
 .history/
 *.swiftdeps
 
+# ===== 构建版本状态（本机自动递增，不提交） =====
+scripts/build_version.txt
+
 # ===== 临时文件补充 =====
 *.log
 *.tmp

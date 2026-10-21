@@ -35,28 +35,67 @@ enum OCRService {
 
     /// OCR 识别 → 行聚类 → 解析词条 → ECDICT 三层校验标记
     /// 全程在后台队列执行，完成后回主线程回调。
+    ///
+    /// 内存策略（拍照路径 Jetsam per-process-limit 修复）：
+    ///  · 输入降采样：最长边 > 1600px 的图（12MP 拍照原图）先重绘为缩略图再走 Vision，
+    ///    避免全尺寸 BGRA 解码与 Vision 超大图多级处理，图像内存从百 MB 级降到 < 20MB；
+    ///  · 串行时序：先 OCR（autoreleasepool 内，识别完图像与 Vision 中间结果全部释放），
+    ///    再加载 77 万词条词库做校验。峰值 = max(OCR 图像峰值, 词库峰值)，而非二者叠加
+    ///    （上一版 DispatchGroup 并行叠加是 2GiB 峰值的直接原因，已废弃）。
     static func recognize(_ image: UIImage, completion: @escaping (Result<[WordEntry], Error>) -> Void) {
         DispatchQueue.global(qos: .userInitiated).async {
-            // 词库 36MB 首次加载较慢，必须在后台线程（懒加载 + 缓存，之后不再耗时）
-            let dict = ECDictValidator.loadDict()
-            do {
-                guard let cg = image.cgImage else {
-                    throw NSError(domain: "ocr", code: -1,
-                                  userInfo: [NSLocalizedDescriptionKey: "无法读取图像数据"])
+            // —— 阶段一：降采样 + OCR（图像生命周期严格限制在池内）——
+            let ocrOutcome: Result<[WordEntry], Error> = autoreleasepool { () -> Result<[WordEntry], Error> in
+                do {
+                    let workImage = downsample(image, maxDimension: 1600)
+                    guard let cg = workImage.cgImage else {
+                        throw NSError(domain: "ocr", code: -1,
+                                      userInfo: [NSLocalizedDescriptionKey: "无法读取图像数据"])
+                    }
+                    let zhRows = try performPass(cg, langs: ["zh-Hans", "en-US"], correction: true)
+                    let enRows = try performPass(cg, langs: ["en-US", "zh-Hans"], correction: true)
+                    let lines = mergeDualPass(zhRows: zhRows, enRows: enRows, cg: cg)
+                    return .success(parseEntries(from: lines))
+                } catch {
+                    return .failure(error)
                 }
-                let zhRows = try performPass(cg, langs: ["zh-Hans", "en-US"], correction: true)
-                let enRows = try performPass(cg, langs: ["en-US", "zh-Hans"], correction: true)
-                let lines = mergeDualPass(zhRows: zhRows, enRows: enRows, cg: cg)
-                var parsed = parseEntries(from: lines)
+            }
+            // 出池：workImage / cg / Vision 观测与裁剪重识别图已释放
+
+            // —— 阶段二：词库加载 + 三层校验（不再与图像叠加）——
+            switch ocrOutcome {
+            case .success(var parsed):
+                let dict = ECDictValidator.loadDict()
                 for i in parsed.indices {
                     parsed[i].validation = ECDictValidator
                         .validateResult(word: parsed[i].word, def: parsed[i].def, dict: dict)
                         .hint
                 }
                 DispatchQueue.main.async { completion(.success(parsed)) }
-            } catch {
-                DispatchQueue.main.async { completion(.failure(error)) }
+            case .failure(let e):
+                DispatchQueue.main.async { completion(.failure(e)) }
             }
+        }
+    }
+
+    /// 输入降采样：最长边超 maxDimension 时重绘为等比缩略图。
+    /// 12MP 拍照原图 4032×3024 → 1600×1200（像素数降 ~6 倍，BGRA 4BPP 约 48MB → 7.7MB）。
+    /// 绘制时自动应用 UIImage orientation，返回正立像素图，Vision 无需再处理方向。
+    private static func downsample(_ image: UIImage, maxDimension: CGFloat) -> UIImage {
+        let w = image.size.width, h = image.size.height
+        let longest = max(w, h)
+        guard longest > maxDimension, w > 0, h > 0 else { return image }
+        let scale = maxDimension / longest
+        let target = CGSize(width: w * scale, height: h * scale)
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        format.opaque = true
+        let renderer = UIGraphicsImageRenderer(size: target, format: format)
+        return renderer.image { ctx in
+            ctx.cgContext.interpolationQuality = .high
+            UIColor.white.setFill()
+            ctx.fill(CGRect(origin: .zero, size: target))
+            image.draw(in: CGRect(origin: .zero, size: target))
         }
     }
 
@@ -186,17 +225,30 @@ enum OCRService {
 
     private static let textChecker = UITextChecker()
 
+    /// UITextChecker 属于 UIKit，官方未声明线程安全；OCR 全流程在后台队列执行，
+    /// 后台并发访问 textChecker 是拍照导单词真机偶发崩溃（EXC_BAD_ACCESS）的主因。
+    /// 这里把拼写检查统一串行路由到主线程执行（识别期间主线程空闲，main.sync 不会卡 UI），
+    /// 并做死锁防护：若恰好在主线程调用则直接执行。
+    private static func withTextChecker<T>(_ body: () -> T) -> T {
+        if Thread.isMainThread { return body() }
+        var result: T?
+        DispatchQueue.main.sync { result = body() }
+        return result!
+    }
+
     /// 单候选拼写纠正：UITextChecker 判定拼写错误时，取 guesses 首位
     /// （Apple 按常见度排序）。不做多候选交叉验证取合法词。
     private static func spellCorrect(_ word: String) -> String? {
-        let ns = word as NSString
-        let range = NSRange(location: 0, length: ns.length)
-        let misspelled = textChecker.rangeOfMisspelledWord(
-            in: word, range: range, startingAt: 0, wrap: false, language: "en")
-        guard misspelled.location != NSNotFound, misspelled.length > 0 else { return nil }
-        guard let guesses = textChecker.guesses(forWordRange: misspelled, in: word, language: "en"),
-              let first = guesses.first, !first.isEmpty else { return nil }
-        return first.lowercased()
+        withTextChecker {
+            let ns = word as NSString
+            let range = NSRange(location: 0, length: ns.length)
+            let misspelled = textChecker.rangeOfMisspelledWord(
+                in: word, range: range, startingAt: 0, wrap: false, language: "en")
+            guard misspelled.location != NSNotFound, misspelled.length > 0 else { return nil }
+            guard let guesses = textChecker.guesses(forWordRange: misspelled, in: word, language: "en"),
+                  let first = guesses.first, !first.isEmpty else { return nil }
+            return first.lowercased()
+        }
     }
 
     private static func cleanDef(_ d0: String) -> String {
@@ -373,33 +425,37 @@ enum OCRService {
     /// token 级拼写纠正（3 字母以上）：UITextChecker 判错时取 guesses 首位
     /// （Apple 按常见度排序）单候选纠正，避免多候选交叉验证反引入错误。
     private static func correctTokens(_ phrase: String) -> String {
-        let tokens = phrase.split(separator: " ").map(String.init)
-        var out: [String] = []
-        for t in tokens {
-            guard t.range(of: "^[A-Za-z]{3,}$", options: .regularExpression) != nil else { out.append(t); continue }
-            let ns = t as NSString
-            let miss = textChecker.rangeOfMisspelledWord(in: t, range: NSRange(location: 0, length: ns.length),
-                                                         startingAt: 0, wrap: false, language: "en")
-            if miss.location != NSNotFound, miss.length > 0 {
-                if let guesses = textChecker.guesses(forWordRange: miss, in: t, language: "en"),
-                   let first = guesses.first, !first.isEmpty {
-                    out.append(first.lowercased())
+        withTextChecker {
+            let tokens = phrase.split(separator: " ").map(String.init)
+            var out: [String] = []
+            for t in tokens {
+                guard t.range(of: "^[A-Za-z]{3,}$", options: .regularExpression) != nil else { out.append(t); continue }
+                let ns = t as NSString
+                let miss = textChecker.rangeOfMisspelledWord(in: t, range: NSRange(location: 0, length: ns.length),
+                                                             startingAt: 0, wrap: false, language: "en")
+                if miss.location != NSNotFound, miss.length > 0 {
+                    if let guesses = textChecker.guesses(forWordRange: miss, in: t, language: "en"),
+                       let first = guesses.first, !first.isEmpty {
+                        out.append(first.lowercased())
+                    } else {
+                        out.append(t)
+                    }
                 } else {
                     out.append(t)
                 }
-            } else {
-                out.append(t)
             }
+            return out.joined(separator: " ")
         }
-        return out.joined(separator: " ")
     }
 
     /// 是否拼写错误（词典判定，仅作裁剪重识别的触发信号，不用于最终选词）
     private static func isMisspelled(_ w: String) -> Bool {
-        let ns = w as NSString
-        let miss = textChecker.rangeOfMisspelledWord(in: w, range: NSRange(location: 0, length: ns.length),
-                                                     startingAt: 0, wrap: false, language: "en")
-        return miss.location != NSNotFound && miss.length > 0
+        withTextChecker {
+            let ns = w as NSString
+            let miss = textChecker.rangeOfMisspelledWord(in: w, range: NSRange(location: 0, length: ns.length),
+                                                         startingAt: 0, wrap: false, language: "en")
+            return miss.location != NSNotFound && miss.length > 0
+        }
     }
 
     /// 按归一化 box 裁剪原图并放大 scale 倍（Vision 原点左下 → CGImage 原点左上）
@@ -451,6 +507,7 @@ enum OCRService {
         }
 
         // 步骤A：低置信度/词典不干净的行，裁剪原行放大3x重识别，词典更干净或置信度更高则采纳
+        // （autoreleasepool：裁剪放大图与二次 Vision 观测用完即释放，避免逐行累积内存）
         var refined: [EnRow] = []
         for en in enRows2 {
             var w = en.word
@@ -458,16 +515,18 @@ enum OCRService {
             let rawBad = en.rawWord.split(separator: " ").contains { isMisspelled(String($0)) }
             let stillBad = w.split(separator: " ").contains { isMisspelled(String($0)) }
             if en.conf < 0.6 || rawBad || stillBad {
-                if let crop = cropAndScale(cg, box: en.box, scale: 3),
-                   let reRows = try? performPass(crop, langs: ["en-US", "zh-Hans"], correction: true) {
-                    for ro in reRows {
-                        if let w2raw = extractEnWord(ro.text) {
-                            let w2 = correctTokens(w2raw)
-                            let badNew = w2raw.split(separator: " ").filter { isMisspelled(String($0)) }.count
-                            if badNew < badOld || (badNew == badOld && ro.conf > en.conf) {
-                                w = w2
+                autoreleasepool {
+                    if let crop = cropAndScale(cg, box: en.box, scale: 3),
+                       let reRows = try? performPass(crop, langs: ["en-US", "zh-Hans"], correction: true) {
+                        for ro in reRows {
+                            if let w2raw = extractEnWord(ro.text) {
+                                let w2 = correctTokens(w2raw)
+                                let badNew = w2raw.split(separator: " ").filter { isMisspelled(String($0)) }.count
+                                if badNew < badOld || (badNew == badOld && ro.conf > en.conf) {
+                                    w = w2
+                                }
+                                break
                             }
-                            break
                         }
                     }
                 }
@@ -510,12 +569,15 @@ enum OCRService {
         var fixed: [(word: String, def: String)] = []
         for m in merged {
             var def = m.def
-            if !containsCJK(def), let n = m.zhNum, let zg = zhGroups.first(where: { $0.num == n }),
-               let crop = cropAndScale(cg, box: zg.box, scale: 3),
-               let reRows = try? performPass(crop, langs: ["zh-Hans", "en-US"], correction: true) {
-                for ro in reRows {
-                    let d2 = extractZhDef(ro.text)
-                    if containsCJK(d2) { def = d2; break }
+            if !containsCJK(def), let n = m.zhNum, let zg = zhGroups.first(where: { $0.num == n }) {
+                autoreleasepool {
+                    if let crop = cropAndScale(cg, box: zg.box, scale: 3),
+                       let reRows = try? performPass(crop, langs: ["zh-Hans", "en-US"], correction: true) {
+                        for ro in reRows {
+                            let d2 = extractZhDef(ro.text)
+                            if containsCJK(d2) { def = d2; break }
+                        }
+                    }
                 }
             }
             fixed.append((m.word, def))

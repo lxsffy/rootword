@@ -119,8 +119,20 @@ struct OcrImportView: View {
                 .foregroundColor(.textSecondary)
 
             HStack(spacing: Sp.x3) {
-                sourceButton(title: "拍照", symbol: "camera.fill", action: { showCamera = true })
-                sourceButton(title: "相册", symbol: "photo.on.rectangle.angled", action: { showLibrary = true })
+                sourceButton(title: "拍照", symbol: "camera.fill", action: {
+                    if UIImagePickerController.isSourceTypeAvailable(.camera) {
+                        showCamera = true
+                    } else {
+                        state.showToast("当前设备不支持相机")
+                    }
+                })
+                sourceButton(title: "相册", symbol: "photo.on.rectangle.angled", action: {
+                    if UIImagePickerController.isSourceTypeAvailable(.photoLibrary) {
+                        showLibrary = true
+                    } else {
+                        state.showToast("相册不可用")
+                    }
+                })
             }
         }
     }
@@ -215,29 +227,17 @@ struct OcrImportView: View {
             } else {
                 VStack(spacing: 0) {
                     ForEach(Array(entries.enumerated()), id: \.element.id) { index, item in
-                        VStack(alignment: .leading, spacing: Sp.x2) {
-                            HStack(spacing: Sp.x2) {
-                                TextField("单词", text: entryWordBinding(index))
-                                    .dsFont(size: 15, weight: .semibold, maxScale: 1.15)
-                                    .autocapitalization(.none)
-                                    .disableAutocorrection(true)
-                                if !item.validation.isEmpty {
-                                    Text(item.validation)
-                                        .dsFont(size: 11, weight: .medium, maxScale: 1.15)
-                                        .foregroundColor(item.validation.contains("⚠") ? .warning500 : .textTertiary)
-                                        .lineLimit(1)
-                                }
-                            }
-                            TextField("释义（可修改）", text: entryDefBinding(index))
-                                .dsFont(size: 13)
-                                .autocapitalization(.none)
-                                .disableAutocorrection(true)
-                        }
-                        .padding(.vertical, Sp.x2)
-
-                        if index != entries.count - 1 {
-                            Divider()
-                        }
+                        EntryRowView(index: index,
+                                     word: item.word,
+                                     def: item.def,
+                                     validation: item.validation,
+                                     isLast: index == entries.count - 1,
+                                     onWord: { i, v in
+                                         if entries.indices.contains(i) { entries[i].word = v }
+                                     },
+                                     onDef: { i, v in
+                                         if entries.indices.contains(i) { entries[i].def = v }
+                                     })
                     }
                 }
                 .padding(.horizontal, Sp.x3)
@@ -249,14 +249,68 @@ struct OcrImportView: View {
         }
     }
 
-    private func entryWordBinding(_ index: Int) -> Binding<String> {
-        Binding(get: { entries[safe: index]?.word ?? "" },
-                set: { if entries.indices.contains(index) { entries[index].word = $0 } })
-    }
+    // MARK: 识别结果单行（防御性子视图）
+    //
+    // 历史踩坑：ForEach 行内 TextField 直接绑定「每次 body 求值新建 get/set 的派生
+    // Binding」会在 iOS 14 触发 AttributeGraph 无限递归崩溃（EXC_BAD_ACCESS），
+    // iOS 15.4 风险虽低但仍属「拍照导单词」页面高危区。这里抽成独立子视图：
+    // 行内 TextField 绑定本行私有 @State，值变化经 onChange 回调写回父级数组
+    // （带索引守卫），彻底规避派生 Binding 依赖回环。
 
-    private func entryDefBinding(_ index: Int) -> Binding<String> {
-        Binding(get: { entries[safe: index]?.def ?? "" },
-                set: { if entries.indices.contains(index) { entries[index].def = $0 } })
+    private struct EntryRowView: View {
+        let index: Int
+        let word: String
+        let def: String
+        let validation: String
+        let isLast: Bool
+        let onWord: (Int, String) -> Void
+        let onDef: (Int, String) -> Void
+
+        @State private var wordText: String
+        @State private var defText: String
+
+        init(index: Int, word: String, def: String, validation: String, isLast: Bool,
+             onWord: @escaping (Int, String) -> Void,
+             onDef: @escaping (Int, String) -> Void) {
+            self.index = index
+            self.word = word
+            self.def = def
+            self.validation = validation
+            self.isLast = isLast
+            self.onWord = onWord
+            self.onDef = onDef
+            _wordText = State(initialValue: word)
+            _defText = State(initialValue: def)
+        }
+
+        var body: some View {
+            VStack(alignment: .leading, spacing: Sp.x2) {
+                HStack(spacing: Sp.x2) {
+                    TextField("单词", text: $wordText)
+                        .dsFont(size: 15, weight: .semibold, maxScale: 1.15)
+                        .autocapitalization(.none)
+                        .disableAutocorrection(true)
+                    if !validation.isEmpty {
+                        Text(validation)
+                            .dsFont(size: 11, weight: .medium, maxScale: 1.15)
+                            .foregroundColor(validation.contains("⚠") ? .warning500 : .textTertiary)
+                            .lineLimit(1)
+                    }
+                }
+                TextField("释义（可修改）", text: $defText)
+                    .dsFont(size: 13)
+                    .autocapitalization(.none)
+                    .disableAutocorrection(true)
+            }
+            .padding(.vertical, Sp.x2)
+            .onChange(of: wordText) { newValue in
+                onWord(index, newValue)
+            }
+            .onChange(of: defText) { newValue in
+                onDef(index, newValue)
+            }
+            if !isLast { Divider() }
+        }
     }
 
     // MARK: 目标词单
