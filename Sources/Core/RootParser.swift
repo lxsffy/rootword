@@ -65,6 +65,26 @@ enum RootParser {
             .sorted { $0.normalized.count > $1.normalized.count }
     }()
 
+    // MARK: - 预计算索引（离线脚本从 ecdict_light.tsv 预解析，App 启动懒加载）
+
+    /// 预计算词根索引：word（小写）→ 词根拆解 spec（`un-|happy` 写法，可被 parseExplicit 解析）。
+    /// 由离线脚本 `generate_precomputed_roots.py` 生成（仅存成功拆解 ≥2 片段的词），
+    /// App 启动后首次使用词根解析时一次性加载，导入单词时 O(1) 命中，未命中再走在线解析。
+    private static let precomputedRoots: [String: String] = {
+        guard let url = Bundle.main.url(forResource: "precomputed_roots", withExtension: "tsv"),
+              let data = try? Data(contentsOf: url),
+              let text = String(data: data, encoding: .utf8) else { return [:] }
+        var dict: [String: String] = [:]
+        dict.reserveCapacity(160_000)
+        for line in text.split(separator: "\n", omittingEmptySubsequences: true) {
+            guard let tab = line.firstIndex(of: "\t") else { continue }
+            let word = String(line[..<tab])
+            let spec = String(line[line.index(after: tab)...])
+            if !word.isEmpty, !spec.isEmpty { dict[word] = spec }
+        }
+        return dict
+    }()
+
     // MARK: - 对外 API
 
     /// 解析入口。`explicitRoot` 为导入数据中用户/老师提供的 root 字段，优先级最高（文档 8.6.2）。
@@ -80,6 +100,12 @@ enum RootParser {
         if let spec = explicitRoot?.trimmingCharacters(in: .whitespacesAndNewlines), !spec.isEmpty {
             let explicit = parseExplicit(spec)
             if !explicit.isEmpty { return explicit }
+        }
+
+        // 预计算索引命中（O(1)）：离线脚本已按同一套 S2–S7 逻辑预解析，结果与在线解析一致
+        if let spec = precomputedRoots[word] {
+            let cached = parseExplicit(spec)
+            if cached.count >= 2 { return cached }
         }
 
         // S2 前缀扫描

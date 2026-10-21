@@ -207,11 +207,19 @@ struct ImportView: View {
 
     /// 切换来源：先存旧草稿 → 复位来源相关状态 → 再载入新草稿。
     /// `presentPicker` 为 false 时不弹文件选择器（用于「已经选完文件、只切来源」的内部调用）。
+    ///
+    /// 「粘贴文本」是特例：**无论是否已是当前来源，点击都会读取系统剪贴板并填入输入框**。
+    /// 因为默认来源本身就是 .paste，若不特判「再次点击」，按钮点击会因 `item == source`
+    /// 直接 return，出现"点了没反应"——用户期待的是点一下就把剪贴板内容贴进来。
     private func switchSource(to item: Source, presentPicker: Bool = true) {
         if item == source {
             // 重复点同一个来源不清空内容（避免误点把正在编辑的文本抹掉）；
             // 「从文件导入」再点一次等于「重新选文件」
             if item == .file && presentPicker { showPicker = true }
+            // 「粘贴文本」再点一次 = 再次从剪贴板拉取（已有内容时追加到末尾）
+            if item == .paste {
+                pasteFromClipboard(appendToExisting: true)
+            }
             return
         }
 
@@ -230,7 +238,11 @@ struct ImportView: View {
         // 3) 载入新来源自己的草稿（模板首次进入或草稿被清空时补一份示例）
         switch item {
         case .paste:
+            // 切到「粘贴文本」：先恢复本来源旧草稿，再读取剪贴板。
+            // 旧草稿非空时剪贴板内容追加到末尾（appendToExisting: true），
+            // 避免把用户已编辑的内容覆盖掉；旧草稿为空则直接填入。
             rawText = pasteDraft
+            pasteFromClipboard(appendToExisting: !pasteDraft.isEmpty)
         case .file:
             rawText = fileDraft
             if presentPicker { showPicker = true }
@@ -238,6 +250,31 @@ struct ImportView: View {
             rawText = templateDraft.isEmpty ? ImportView.csvTemplate : templateDraft
             templateDraft = rawText
         }
+    }
+
+    /// 从系统剪贴板读取文本并填入当前输入框（「粘贴文本」按钮的核心行为）。
+    /// - appendToExisting: true 时把剪贴板内容追加到已有内容末尾（自动补换行避免粘连）；
+    ///                     false 时（输入框为空）直接填入。
+    /// 剪贴板为空时 toast「剪贴板为空」，不静默；读取成功 toast「已从剪贴板粘贴 N 行」。
+    private func pasteFromClipboard(appendToExisting: Bool) {
+        let clipped = (UIPasteboard.general.string ?? "")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !clipped.isEmpty else {
+            state.showToast("剪贴板为空")
+            return
+        }
+
+        if appendToExisting && !rawText.isEmpty {
+            // 追加语义：已有内容保留，先保证末尾换行再拼接，两段内容不会粘在同一行
+            let separator = rawText.hasSuffix("\n") ? "" : "\n"
+            rawText += separator + clipped
+        } else {
+            rawText = clipped
+        }
+        // 与 pasteDraft 同步：后续切走再切回，粘贴内容不会丢
+        pasteDraft = rawText
+        let lines = clipped.components(separatedBy: .newlines).count
+        state.showToast("已从剪贴板粘贴 \(lines) 行")
     }
 
     // MARK: 输入区
@@ -256,7 +293,7 @@ struct ImportView: View {
 
             ZStack(alignment: .topLeading) {
                 if rawText.isEmpty {
-                    Text("每行一个单词或词组，可用 @ 分隔字段（也认 Tab / 逗号 / 竖线）：\n\nabandon@放弃@/əˈbændən/@v.\ngood morning@早上好\nap-|-band-|-on")
+                    Text("每行一个单词或词组，冒号前是单词、冒号后是释义（也兼容 @ / Tab / 逗号 / 竖线旧格式）：\n\ndisease:n. 疾病，病\ndish:n. （烹制好的）菜肴，一道菜\neach other:互相，彼此")
                         .dsFont(size: 14)
                         .foregroundColor(.textTertiary)
                         .padding(.horizontal, Sp.x3 + 2)
@@ -372,10 +409,10 @@ struct ImportView: View {
     private var formatGuide: some View {
         SectionCard(title: "导入格式", subtitle: "支持 TXT / CSV / JSON") {
             VStack(alignment: .leading, spacing: Sp.x2) {
-                bullet("字段顺序：单词@释义@音标@词性@词根拆解@记忆法@例句@例句翻译@词单名")
-                bullet("单词列可以是词组：good morning、ice cream（词与词之间用空格，最多 4 个词），词组不参与词根拆解")
-                bullet("只有第 1 列必填，其余可留空；缺释义的单词会标注「待补充」")
-                bullet("分隔符自动识别：@ / Tab / 英文逗号 / 中文逗号 / 竖线")
+                bullet("默认格式（推荐）：每行一个「单词:释义」，如 disease:n. 疾病，病；词性前缀（n./adj./v. 等）会自动识别并剥离")
+                bullet("单词可以是词组：each other、good morning（词与词之间用空格，最多 4 个词），词组不参与词根拆解")
+                bullet("旧格式仍兼容：单词@释义@音标@词性@词根拆解@记忆法@例句@例句翻译@词单名，只有第 1 列必填")
+                bullet("分隔符自动识别：:（半角/全角）→ @ / Tab / 英文逗号 / 中文逗号 / 竖线")
                 bullet("编码自动识别：UTF-8 BOM → UTF-8 → GB18030")
                 bullet("重复单词：同一文件内自动合并；已在目标词单里的会跳过，整批都已存在时会直接提示「无需重复导入」")
                 bullet("词根拆解写法：pre-|dict 或 un-+happy，两种写法等价")
@@ -507,10 +544,11 @@ struct ImportView: View {
     // MARK: 示例模板
 
     static let csvTemplate = """
-    单词@释义@音标@词性@词根拆解@记忆法@例句@例句翻译@词单名
-    predict@预测；预言@/prɪˈdɪkt/@v.@pre-|dict@pre 表示「预先」，dict 表示「说」——提前说出来就是预测@I can predict the result.@我能预测结果。@七年级 Unit 3
-    describe@描述@/dɪˈskraɪb/@v.@de-|scrib@scrib 表示「写」——写下来就是描述@Please describe your school.@请描述你的学校。@七年级 Unit 3
-    import@进口；导入@/ɪmˈpɔːrt/@v.@im-|port@port 表示「搬运」——搬进来就是进口@We import books from abroad.@我们从国外进口书籍。@七年级 Unit 3
+    # 每行一个「单词:释义」（词性自动识别，词根自动解析）
+    disease:n. 疾病，病
+    dish:n. （烹制好的）菜肴，一道菜
+    dodo:n. 渡渡鸟
+    each other:互相，彼此
     """
 }
 

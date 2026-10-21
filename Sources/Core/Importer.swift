@@ -6,7 +6,7 @@
 //    · 三种格式：JSON / CSV / TXT（含粘贴文本）
 //    · 词条形态：单个单词（predict）与词组（good morning / ice cream）都支持
 //    · 编码识别：UTF-8(BOM) → UTF-8 → GB18030
-//    · 分隔符嗅探：@ → \t → ,（含中文，） → | → 连续空格 → 无分隔符
+//    · 分隔符嗅探：:（含中文：） → @ → \t → ,（含中文，） → | → 连续空格 → 无分隔符
 //    · 表头别名映射：9 个标准字段 × 多语言别名
 //    · 校验分级：ERROR 跳行 / ERROR 整体失败 / WARNING 截断提示 / INFO 静默计数
 //    · 去重与补全：词单内保留信息更完整的一条；跨词单仅提示；同名补全释义
@@ -383,6 +383,13 @@ enum Importer {
                 assign(key: key, value: fields[index], to: &row)
             }
 
+            // 大众格式「单词:释义」：从释义前缀自动识别词性（n. 疾病，病 → pos=n.，meaning=疾病，病）
+            if row.pos.isEmpty, !row.meaning.isEmpty {
+                let extracted = extractPOS(from: row.meaning)
+                row.pos = extracted.pos
+                row.meaning = extracted.meaning
+            }
+
             if row.deckName.isEmpty { row.deckName = targetDeckName }
             rows.append(row)
         }
@@ -599,7 +606,7 @@ enum Importer {
 
     // MARK: - 分词工具
 
-    /// 分隔符嗅探（文档 8.3）：取首个能保证「每行字段数一致且 ≥2」的分隔符，优先级 @ → \t → , → | → 连续空格。
+    /// 分隔符嗅探（文档 8.3）：取首个能保证「每行字段数一致且 ≥2」的分隔符，优先级 :（含全角：） → @ → \t → , → | → 连续空格。
     ///
     /// **@ 为最高优先级**：只要行内出现 @（能切出 ≥2 段）就按 @ 切分。
     /// 理由：@ 在视觉上远比逗号/竖线容易分辨，且几乎不会出现在单词、释义、例句里，
@@ -610,7 +617,13 @@ enum Importer {
     /// 就仍按逗号解析——这种情况来自单元格里混进了逗号（模板的「记忆法」列即如此），
     /// 错位的列交由 `splitIntoColumns` 的列对齐摆正，而不是把整行当成一个超长单词拒收。
     static func sniffDelimiter(_ lines: [String]) -> Character? {
-        // 优先级 1：@（行内出现 @ 即按 @ 切分，命中时旧分隔符判定逻辑完全不走，旧格式行为不变）
+        // 优先级 1：冒号（大众「单词:释义」格式，最高优先级）
+        // 每行找第一个 : 或 ：，左段为合法单词/词组、右段非空即记命中；
+        // 命中行 ≥1 且 ≥ 半数行就启用冒号分隔。只切第一个冒号，释义里的冒号不受影响。
+        let colonLineCount = lines.filter { colonSplit($0) != nil }.count
+        if colonLineCount >= 1, colonLineCount * 2 >= lines.count { return ":" }
+
+        // 优先级 2：@（行内出现 @ 即按 @ 切分，命中时旧分隔符判定逻辑完全不走，旧格式行为不变）
         // 仅加一道保守闸门：含 @ 的行要占到多数（单行粘贴天然满足），
         // 免得逗号/Tab 表格里某个单元格偶尔出现一个 @（如例句里的邮箱）就把整表判成 @ 分隔。
         let atLineCount = lines.filter { split($0, by: "@").count >= 2 }.count
@@ -659,12 +672,87 @@ enum Importer {
         if delimiter == " " {
             return splitByMultipleSpaces(line).map { $0.trimmingCharacters(in: .whitespaces) }
         }
+        if delimiter == ":" {
+            if let pair = colonSplit(line) {
+                return [pair.word, pair.meaning]
+            }
+            return [line.trimmingCharacters(in: .whitespaces)]
+        }
         if delimiter == "," {
             return commaPieces(line).tokens.map { $0.trimmingCharacters(in: .whitespaces) }
         }
         return line
             .components(separatedBy: String(delimiter))
             .map { $0.trimmingCharacters(in: .whitespaces) }
+    }
+
+    // MARK: - 大众「单词:释义」格式（冒号切分 + 词性剥离）
+
+    /// word:释义 切分：只切第一个冒号（半角 : 或全角 ：），返回 (word, meaning)。
+    /// 左段必须是合法单词/词组（isValidWord），右段非空才算命中；无冒号或左段非法返回 nil。
+    /// 释义内部的冒号（URL / 时间）不受影响——只切第一个，剩余全部归释义。
+    static func colonSplit(_ line: String) -> (word: String, meaning: String)? {
+        let chars = Array(line)
+        for index in 0..<chars.count {
+            let ch = chars[index]
+            guard ch == ":" || ch == "：" else { continue }
+            let word = String(chars[0..<index]).trimmingCharacters(in: .whitespaces)
+            let meaning = String(chars[(index + 1)...]).trimmingCharacters(in: .whitespaces)
+            guard isValidWord(word), !meaning.isEmpty else { return nil }
+            return (word, meaning)
+        }
+        return nil
+    }
+
+    /// 从释义前缀识别并剥离词性：「n. 疾病，病」→ pos="n."，meaning="疾病，病"。
+    /// 支持带点（n.）与不带点（n）、多词性（n./v.、n.&v.、n. v.、n.、v.）。
+    /// 仅当整段前缀由 ASCII 字母与分隔符组成、且每个 token 都命中 knownPOS 才剥离，
+    /// 避免把中文释义（如「疾病，病」）或英文句首单词误判成词性。
+    static func extractPOS(from meaning: String) -> (pos: String, meaning: String) {
+        let trimmed = meaning.trimmingCharacters(in: .whitespaces)
+        guard !trimmed.isEmpty else { return ("", meaning) }
+
+        let chars = Array(trimmed)
+        var tokens: [(raw: String, bare: String)] = []
+        var current = ""
+        var lastGoodEnd = -1
+        var index = 0
+
+        func flush(at end: Int) {
+            guard !current.isEmpty else { return }
+            let bare = current.replacingOccurrences(of: ".", with: "").lowercased()
+            if knownPOS.contains(bare) {
+                tokens.append((current, bare))
+                lastGoodEnd = end
+            } else {
+                lastGoodEnd = -1
+            }
+            current = ""
+        }
+
+        while index < chars.count {
+            let ch = chars[index]
+            if (ch.isASCII && ch.isLetter) || ch == "." {
+                current.append(ch)
+                index += 1
+                continue
+            }
+            if ch == " " || ch == "/" || ch == "&" || ch == "、" || ch == "," || ch == "，" {
+                flush(at: index)
+                if lastGoodEnd < 0 { break }
+                index += 1
+                continue
+            }
+            // 中文等非词性字符：词性前缀到此结束
+            flush(at: index)
+            break
+        }
+        if index == chars.count { flush(at: index) }
+
+        guard !tokens.isEmpty, lastGoodEnd >= 0 else { return ("", meaning) }
+        let pos = tokens.map { $0.raw }.joined(separator: "/")
+        let rest = String(chars[lastGoodEnd...]).trimmingCharacters(in: .whitespaces)
+        return (pos, rest)
     }
 
     // MARK: - 列对齐（单元格内出现逗号时）
@@ -1089,16 +1177,18 @@ enum Importer {
     // MARK: - 内嵌示例（粘贴框占位与"查看格式规范"）
 
     static let sampleText = """
-    # 一行一个单词，也可以按 单词@释义@音标 依次写
-    unhappy@不快乐的@/ʌnˈhæpi/
-    impossible@不可能的@/ɪmˈpɒsəbl/
-    teacher@老师@/ˈtiːtʃə(r)/
+    # 每行一个单词或词组：冒号前是单词，冒号后是释义（可带词性）
+    disease:n. 疾病，病
+    dish:n. （烹制好的）菜肴，一道菜
+    each other:互相，彼此
     """
 
     static let sampleCSV = """
-    word@meaning@phonetic@pos@root@mnemonic@example@example_cn@deck
-    unhappy@不快乐的@/ʌnˈhæpi/@adj.@un-|happy@un（不）+ happy（快乐）@She looks unhappy today.@她今天看起来不开心。@七年级上 Unit 3
-    impossible@不可能的@/ɪmˈpɒsəbl/@adj.@im-|poss|-ible@im（不）+ poss（能够）+-ible（可…的）@Nothing is impossible.@没有什么是不可能的。@七年级上 Unit 3
+    # 默认推荐「单词:释义」大众格式；旧格式（@ / CSV 多列 / 词根列）仍兼容
+    disease:n. 疾病，病
+    dish:n. （烹制好的）菜肴，一道菜
+    dodo:n. 渡渡鸟
+    each other:互相，彼此
     """
 }
 
