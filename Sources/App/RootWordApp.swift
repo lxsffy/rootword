@@ -363,18 +363,32 @@ struct StudyFlowView: View {
 
     @EnvironmentObject private var state: AppState
     @Environment(\.presentationMode) private var presentationMode
+    @ObservedObject private var confirms = ConfirmCenter.shared
 
     var body: some View {
-        Group {
-            if let summary = state.lastSummary {
-                SessionSummaryView(summary: summary,
-                                   onDone: { close() },
-                                   onAgain: { again() })
-            } else {
-                StudyView(onExit: { close() })
+        ZStack {
+            Group {
+                if let summary = state.lastSummary {
+                    SessionSummaryView(summary: summary,
+                                       onDone: { close() },
+                                       onAgain: { again() })
+                } else {
+                    StudyView(onExit: { close() })
+                        // 会话被替换时（如词根拆解卡「一起学」同根词）重建答题页，
+                        // 避免旧会话的 revealed / 评分状态残留到新会话
+                        .id(state.session?.startedAt.timeIntervalSince1970 ?? -1)
+                }
+            }
+            .background(PageBackground())
+
+            // 会话内确认弹窗：fullScreenCover 是独立模态层级，AppShell 全局 ZStack
+            // 中的 ConfirmDialogView 永远盖不到模态之上，须在模态根重复渲染才能
+            // 按下 X 后立即置顶（退出学习 / 词根「一起学」等 ConfirmCenter 弹窗）
+            if let request = confirms.request {
+                ConfirmDialogView(request: request, onDismiss: { confirms.dismiss() })
+                    .zIndex(20)
             }
         }
-        .background(PageBackground())
     }
 
     private func close() {

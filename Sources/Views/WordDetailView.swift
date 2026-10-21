@@ -15,6 +15,7 @@ struct WordDetailView: View {
     let wordID: String
 
     @State private var showDelete = false
+    @State private var showStudy = false
 
     private var word: Word? { state.word(id: wordID) }
 
@@ -51,6 +52,9 @@ struct WordDetailView: View {
                 DeleteWordSheet(word: word, onFinished: { showDelete = false })
                     .environmentObject(state)
             }
+        }
+        .fullScreenCover(isPresented: $showStudy) {
+            StudyFlowView().environmentObject(state)
         }
     }
 
@@ -107,7 +111,7 @@ struct WordDetailView: View {
                             if state.session == nil {
                                 state.showToast("这个词根暂时没有更多单词", icon: "info.circle.fill")
                             } else {
-                                state.showToast("已按「\(segment.text)」生成一组练习", icon: "play.circle.fill")
+                                showStudy = true
                             }
                         })
                     }
@@ -225,7 +229,7 @@ struct WordDetailView: View {
                         if state.session == nil {
                             state.showToast("暂时无法生成练习组", icon: "info.circle.fill", isError: true)
                         } else {
-                            state.showToast("已生成一组同根词练习")
+                            showStudy = true
                         }
                     }
                     .buttonStyle(SecondaryButtonStyle(height: 44))

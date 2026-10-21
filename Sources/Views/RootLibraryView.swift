@@ -18,6 +18,7 @@ struct RootLibraryView: View {
     @State private var keyword = ""
     @State private var typeFilter: RootType? = nil
     @State private var sortByHits = true
+    @State private var showStudy = false
 
     private var aggregation: [(entry: RootEntry, words: [Word])] {
         var items = state.rootAggregation()
@@ -90,6 +91,9 @@ struct RootLibraryView: View {
                 }
                 .accessibilityLabel(sortByHits ? "按命中数量排序" : "按字母排序")
             }
+        }
+        .fullScreenCover(isPresented: $showStudy) {
+            StudyFlowView().environmentObject(state)
         }
     }
 

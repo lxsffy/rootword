@@ -14,6 +14,7 @@ struct ProfileHomeView: View {
     @EnvironmentObject private var state: AppState
 
     @State private var selectedHeatCount: Int?
+    @State private var showStudy = false
 
     var body: some View {
         ScrollView {
@@ -39,6 +40,9 @@ struct ProfileHomeView: View {
         .background(PageBackground())
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
+        .fullScreenCover(isPresented: $showStudy) {
+            StudyFlowView().environmentObject(state)
+        }
     }
 
     // MARK: 概览
@@ -98,7 +102,9 @@ struct ProfileHomeView: View {
                 Button("查看未掌握的单词") {
                     let ids = state.words.filter { $0.srs.phase != .mastered }.map { $0.id }
                     state.startSession(source: .rootWords(ids))
-                    if state.session == nil {
+                    if state.session != nil {
+                        showStudy = true
+                    } else {
                         state.showToast("暂时没有可练的单词", icon: "info.circle.fill")
                     }
                 }

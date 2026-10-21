@@ -47,7 +47,7 @@ enum OCRService {
             // —— 阶段一：降采样 + OCR（图像生命周期严格限制在池内）——
             let ocrOutcome: Result<[WordEntry], Error> = autoreleasepool { () -> Result<[WordEntry], Error> in
                 do {
-                    let workImage = downsample(image, maxDimension: 1600)
+                    let workImage = downsampled(image, maxDimension: 1600)
                     guard let cg = workImage.cgImage else {
                         throw NSError(domain: "ocr", code: -1,
                                       userInfo: [NSLocalizedDescriptionKey: "无法读取图像数据"])
@@ -81,7 +81,8 @@ enum OCRService {
     /// 输入降采样：最长边超 maxDimension 时重绘为等比缩略图。
     /// 12MP 拍照原图 4032×3024 → 1600×1200（像素数降 ~6 倍，BGRA 4BPP 约 48MB → 7.7MB）。
     /// 绘制时自动应用 UIImage orientation，返回正立像素图，Vision 无需再处理方向。
-    private static func downsample(_ image: UIImage, maxDimension: CGFloat) -> UIImage {
+    /// internal：供图片编辑页（ImageEditView）在进入 OCR 前复用（最长边 2048 缩略）。
+    static func downsampled(_ image: UIImage, maxDimension: CGFloat) -> UIImage {
         let w = image.size.width, h = image.size.height
         let longest = max(w, h)
         guard longest > maxDimension, w > 0, h > 0 else { return image }

@@ -24,6 +24,8 @@ struct OcrImportView: View {
     @State private var stage: Stage = .idle
     @State private var showCamera = false
     @State private var showLibrary = false
+    /// 待编辑图片（拍照/相册回调后先降采样 2048 存入，编辑确认后再送 OCR）
+    @State private var editImage: UIImage?
     @State private var entries: [WordEntry] = []
     @State private var ocrError: String?
     @State private var deckID = ""
@@ -80,12 +82,27 @@ struct OcrImportView: View {
             }
         }
         .sheet(isPresented: $showCamera) {
-            ImagePicker(sourceType: .camera) { img in handleImage(img) }
+            ImagePicker(sourceType: .camera) { img in handleRawImage(img) }
                 .ignoresSafeArea()
         }
         .sheet(isPresented: $showLibrary) {
-            ImagePicker(sourceType: .photoLibrary) { img in handleImage(img) }
+            ImagePicker(sourceType: .photoLibrary) { img in handleRawImage(img) }
                 .ignoresSafeArea()
+        }
+        .sheet(isPresented: Binding(get: { editImage != nil },
+                                    set: { if !$0 { editImage = nil } })) {
+            if let img = editImage {
+                ImageEditView(image: img,
+                              onConfirm: { edited in
+                                  editImage = nil
+                                  handleImage(edited)
+                              },
+                              onCancel: {
+                                  editImage = nil
+                                  stage = .idle
+                              })
+                    .ignoresSafeArea()
+            }
         }
         .sheet(item: $preview) { payload in
             ImportPreviewView(result: payload.result,
@@ -380,6 +397,13 @@ struct OcrImportView: View {
     }
 
     // MARK: 行为
+
+    /// 拍照/相册回调：先降采样为最长边 2048 缩略图再进入编辑页，
+    /// 避免 12MP 原图（约 48MB）常驻内存；编辑确认后再走 OCR（内部再降 1600）。
+    private func handleRawImage(_ image: UIImage) {
+        let thumb = OCRService.downsampled(image, maxDimension: 2048)
+        editImage = thumb
+    }
 
     private func handleImage(_ image: UIImage) {
         stage = .recognizing

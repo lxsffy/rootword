@@ -103,7 +103,8 @@ class RootParserClone:
         for length in range(max_len, 1, -1):
             form = word[:length]
             remainder = word[length:]
-            if len(remainder) < 4:
+            # 剩余部分至少 4 个字母，或是词根库可信词根（与 Swift matchPrefix 一致）
+            if len(remainder) < 4 and self.match_root(remainder) is None:
                 continue
             entry = self.prefix_index.get(form)
             if entry is None and form in ASSIMILATION:
@@ -173,12 +174,35 @@ class RootParserClone:
             segments.append(stem_segment)
         if suffix_segment is not None:
             segments.append(suffix_segment)
-        if prefix_segment is None and stem_segment is None and suffix_segment is None:
-            return None
+        if prefix_segment is None and suffix_segment is None:
+            # S5B 组合词拆分（与 Swift matchCompound 一致）：airport = air + port
+            # 无前后缀即优先尝试组合，避免整词子串命中单个词根（如 airport 含 port）阻断组合
+            compound = self.match_compound(word)
+            if compound is not None:
+                return compound
+            if stem_segment is None:
+                return None
 
         if len(segments) < 2:
             return None
         return [s['text'] for s in segments]
+
+    def match_compound(self, word):
+        """组合词拆分：左右两段均为可信词根（airport = air + port）"""
+        n = len(word)
+        if n < 6:
+            return None
+        for left_len in range(n - 3, 2, -1):
+            left = word[:left_len]
+            right = word[left_len:]
+            if len(left) < 3 or len(right) < 3:
+                continue
+            left_entry = self.match_root(left)
+            right_entry = self.match_root(right)
+            if left_entry is None or right_entry is None:
+                continue
+            return [left_entry['normalized'], right_entry['normalized']]
+        return None
 
     @staticmethod
     def is_matchable(word):

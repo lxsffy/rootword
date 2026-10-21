@@ -580,11 +580,18 @@ enum Importer {
                           startPosition: Int,
                           now: Date = Date()) -> [Word] {
         var output: [Word] = []
-        for (offset, item) in result.words.enumerated() {
-            var segments = RootParser.parse(item.text, explicitRoot: item.rootSpec.isEmpty ? nil : item.rootSpec)
-            if item.rootSpec.isEmpty && segments.count < 2 {
-                segments = []
+        // 大词库懒加载（ecdict_light.tsv，首次加载后缓存复用）：导入时补全缺失的 pos 字段
+        let dict = ECDictValidator.loadDict()
+        for (offset, var item) in result.words.enumerated() {
+            // pos 补全：导入数据缺词性时，比对内置大词库 ecdict 的释义前缀提取词性
+            // （climb → v.、kilometre → n.、inspiring → adj.）
+            if item.pos.isEmpty, let entry = dict[Importer.normalizeKey(item.text)] {
+                let extracted = Importer.extractPOS(from: entry.translation)
+                if !extracted.pos.isEmpty {
+                    item.pos = extracted.pos
+                }
             }
+            let segments = RootParser.parse(item.text, explicitRoot: item.rootSpec.isEmpty ? nil : item.rootSpec)
             let mnemonic = item.mnemonic.isEmpty
                 ? RootParser.makeMnemonic(segments: segments, meaning: item.meaning)
                 : item.mnemonic
@@ -750,7 +757,12 @@ enum Importer {
         if index == chars.count { flush(at: index) }
 
         guard !tokens.isEmpty, lastGoodEnd >= 0 else { return ("", meaning) }
-        let pos = tokens.map { $0.raw }.joined(separator: "/")
+        // ecdict 释义常用简写 a.（形容词）/ ad.（副词），统一映射为 adj. / adv. 便于展示
+        let pos = tokens.map { token -> String in
+            if token.bare == "a" { return "adj." }
+            if token.bare == "ad" { return "adv." }
+            return token.raw
+        }.joined(separator: "/")
         let rest = String(chars[lastGoodEnd...]).trimmingCharacters(in: .whitespaces)
         return (pos, rest)
     }
@@ -1054,7 +1066,7 @@ enum Importer {
 
     private static let knownPOS: Set<String> = [
         "n", "v", "vt", "vi", "adj", "adv", "prep", "conj", "pron",
-        "num", "art", "int", "aux", "abbr", "phr", "det"
+        "num", "art", "int", "aux", "abbr", "phr", "det", "a", "ad"
     ]
 
     /// 是否含中日韩文字或全角/中文标点（用于列语义评分）

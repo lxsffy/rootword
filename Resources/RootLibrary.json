@@ -2754,5 +2754,237 @@
       "creator",
       "translator"
     ]
+  },
+  {
+    "id": "air",
+    "form": "air",
+    "normalized": "air",
+    "type": "root",
+    "meaning": "空气",
+    "origin": "古法语 air / 拉丁语 aer",
+    "note": "词根 air 常构成与空气、天空相关的词",
+    "examples": [
+      "airport",
+      "airline"
+    ]
+  },
+  {
+    "id": "sun",
+    "form": "sun",
+    "normalized": "sun",
+    "type": "root",
+    "meaning": "太阳",
+    "origin": "古英语 sunne",
+    "note": "词根 sun 常构成与太阳、日照相关的词",
+    "examples": [
+      "sunrise",
+      "sunset"
+    ]
+  },
+  {
+    "id": "rise",
+    "form": "rise",
+    "normalized": "rise",
+    "type": "root",
+    "meaning": "升起、上升",
+    "origin": "古英语 rīsan",
+    "note": "词根 rise 表由低向高的运动",
+    "examples": [
+      "sunrise",
+      "uprising"
+    ]
+  },
+  {
+    "id": "set",
+    "form": "set",
+    "normalized": "set",
+    "type": "root",
+    "meaning": "落下、放置",
+    "origin": "古英语 settan",
+    "note": "词根 set 表放置或（日、月）西沉",
+    "examples": [
+      "sunset",
+      "upset"
+    ]
+  },
+  {
+    "id": "tooth",
+    "form": "tooth",
+    "normalized": "tooth",
+    "type": "root",
+    "meaning": "牙齿",
+    "origin": "古英语 tōþ",
+    "note": "词根 tooth 常构成与牙齿、口腔相关的词",
+    "examples": [
+      "toothpaste",
+      "toothache"
+    ]
+  },
+  {
+    "id": "paste",
+    "form": "paste",
+    "normalized": "paste",
+    "type": "root",
+    "meaning": "糊、膏",
+    "origin": "古法语 paste",
+    "note": "词根 paste 表糊状物，牙膏即 tooth paste",
+    "examples": [
+      "toothpaste"
+    ]
+  },
+  {
+    "id": "school",
+    "form": "school",
+    "normalized": "school",
+    "type": "root",
+    "meaning": "学校",
+    "origin": "希腊语 skholē / 拉丁语 schola",
+    "note": "词根 school 与学习场所相关",
+    "examples": [
+      "schoolbag",
+      "preschool"
+    ]
+  },
+  {
+    "id": "bag",
+    "form": "bag",
+    "normalized": "bag",
+    "type": "root",
+    "meaning": "包、袋",
+    "origin": "古挪威语 baggi",
+    "note": "词根 bag 表盛装物品的袋子",
+    "examples": [
+      "schoolbag",
+      "handbag"
+    ]
+  },
+  {
+    "id": "hair",
+    "form": "hair",
+    "normalized": "hair",
+    "type": "root",
+    "meaning": "头发、毛发",
+    "origin": "古英语 hǣr",
+    "note": "词根 hair 与毛发相关",
+    "examples": [
+      "haircut",
+      "hairbrush"
+    ]
+  },
+  {
+    "id": "cut",
+    "form": "cut",
+    "normalized": "cut",
+    "type": "root",
+    "meaning": "剪、切",
+    "origin": "中古英语 cutten",
+    "note": "词根 cut 表剪裁动作",
+    "examples": [
+      "haircut",
+      "cutting"
+    ]
+  },
+  {
+    "id": "day",
+    "form": "day",
+    "normalized": "day",
+    "type": "root",
+    "meaning": "天、日",
+    "origin": "古英语 dæg",
+    "note": "词根 day 表一天的时间单位",
+    "examples": [
+      "daytime",
+      "yesterday"
+    ]
+  },
+  {
+    "id": "time",
+    "form": "time",
+    "normalized": "time",
+    "type": "root",
+    "meaning": "时间",
+    "origin": "古英语 tīma",
+    "note": "词根 time 与时间相关",
+    "examples": [
+      "daytime",
+      "overtime"
+    ]
+  },
+  {
+    "id": "use",
+    "form": "use",
+    "normalized": "use",
+    "type": "root",
+    "meaning": "使用",
+    "origin": "拉丁语 usus",
+    "note": "词根 use 表利用、应用",
+    "examples": [
+      "reuse",
+      "useful"
+    ]
+  },
+  {
+    "id": "view",
+    "form": "view",
+    "normalized": "view",
+    "type": "root",
+    "meaning": "看、视野",
+    "origin": "拉丁语 vidēre",
+    "note": "词根 view 与观看、景象相关",
+    "examples": [
+      "review",
+      "interview"
+    ]
+  },
+  {
+    "id": "kilo",
+    "form": "kilo",
+    "normalized": "kilo",
+    "type": "root",
+    "meaning": "千",
+    "origin": "希腊语 khilioi",
+    "note": "词根 kilo 表千，千米即一千米",
+    "examples": [
+      "kilometre",
+      "kilogram"
+    ]
+  },
+  {
+    "id": "naut",
+    "form": "naut",
+    "normalized": "naut",
+    "type": "root",
+    "meaning": "船、航行",
+    "origin": "希腊语 nautēs",
+    "note": "词根 naut 与航海、航天相关",
+    "examples": [
+      "astronaut",
+      "nautical"
+    ]
+  },
+  {
+    "id": "yester",
+    "form": "yester",
+    "normalized": "yester",
+    "type": "root",
+    "meaning": "昨、前一",
+    "origin": "古英语 geostra",
+    "note": "词根 yester 表「前一天」的时间关系",
+    "examples": [
+      "yesterday"
+    ]
+  },
+  {
+    "id": "metre",
+    "form": "metre",
+    "normalized": "metre",
+    "type": "root",
+    "meaning": "米、度量",
+    "origin": "希腊语 metron",
+    "note": "词根 metre 表长度单位米，千米即一千米",
+    "examples": [
+      "kilometre",
+      "metre"
+    ]
   }
 ]

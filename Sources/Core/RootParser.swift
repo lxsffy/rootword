@@ -148,8 +148,18 @@ enum RootParser {
         if let prefixSegment = prefixSegment { segments.append(prefixSegment) }
         if let stemSegment = stemSegment { segments.append(stemSegment) }
         if let suffixSegment = suffixSegment { segments.append(suffixSegment) }
-        if prefixSegment == nil && stemSegment == nil && suffixSegment == nil {
-            segments.append(unmatchedSegment(raw))
+        if prefixSegment == nil && suffixSegment == nil {
+            // S5B 组合词拆分：无前缀/后缀结构时，优先尝试左右两段均为词根的切分
+            // （airport = air + port、sunrise = sun + rise、schoolbag = school + bag）
+            // 注意：即使词干子串已命中单个词根（如 airport 含 port），也先给组合拆解机会，
+            // 避免把可拆组合词退化为单段半截拆解。
+            if let compound = matchCompound(word) {
+                return compound
+            }
+            // 无组合命中：保留词干单段（词根本身）或整词未收录
+            if stemSegment == nil {
+                segments.append(unmatchedSegment(raw))
+            }
         }
 
         // 命中片段不足 2 个 → 视为未收录（避免"只有后缀"这种半截拆解误导学生）
@@ -202,8 +212,9 @@ enum RootParser {
         for length in stride(from: maxLength, through: 2, by: -1) {
             let form = String(word.prefix(length))
             let remainder = String(word.dropFirst(length))
-            // 剩余部分至少 4 个字母：避免 about → ab- + out 这类无意义的伪拆解
-            guard remainder.count >= 4 else { continue }
+            // 剩余部分至少 4 个字母，或是词根库可信词根：避免 about → ab- + out 这类伪拆解，
+            // 同时允许 re + use / re + set 这类「短词根」前缀组合（词根库命中才放行）
+            guard remainder.count >= 4 || matchRoot(remainder) != nil else { continue }
 
             let entry: RootEntry?
             if let direct = prefixIndex[form] {
@@ -287,6 +298,35 @@ enum RootParser {
             swap(&previous, &current)
         }
         return previous[b.count]
+    }
+
+    // MARK: - S5B 组合词拆分
+
+    /// 组合词拆分（compound）：整词无法用前缀/后缀/词干拆解时，从左往右尝试所有切点，
+    /// 左右两段都必须命中词根库（精确 / 子串 / 近似），且各 ≥3 个字母。
+    /// 命中多组切点时取「左段最长」（更贴近词源，如 schoolbag 优于 s+choolbag）。
+    /// 例：airport = air + port、sunrise = sun + rise、toothpaste = tooth + paste。
+    private static func matchCompound(_ word: String) -> [WordSegment]? {
+        let chars = Array(word)
+        guard chars.count >= 6 else { return nil }
+        // 左段从长到短：leftLen 至少 3，右段至少 3
+        for leftLen in stride(from: chars.count - 3, through: 3, by: -1) {
+            let left = String(chars[0..<leftLen])
+            let right = String(chars[leftLen...])
+            guard left.count >= 3, right.count >= 3 else { continue }
+            guard let leftEntry = matchRoot(left), let rightEntry = matchRoot(right) else { continue }
+            return [
+                WordSegment(text: leftEntry.normalized,
+                            type: .root,
+                            meaning: leftEntry.meaning,
+                            rootID: leftEntry.id),
+                WordSegment(text: rightEntry.normalized,
+                            type: .root,
+                            meaning: rightEntry.meaning,
+                            rootID: rightEntry.id)
+            ]
+        }
+        return nil
     }
 
     // MARK: - 显式 root 字段（形如 `im-+poss+-ible` 或 `pre-|dict`）
