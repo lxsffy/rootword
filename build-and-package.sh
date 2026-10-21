@@ -101,6 +101,12 @@ cp "$RES_DIR/Info.plist" "$APP_BUNDLE/Info.plist"
 # 词根库：只读资源，App 通过 Bundle.main.url(forResource:) 读取
 cp "$RES_DIR/RootLibrary.json" "$APP_BUNDLE/RootLibrary.json"
 
+# 预计算词根索引：导入时 O(1) 命中词根拆解（离线脚本预解析 ecdict_light.tsv 生成，约 3.7MB）
+if [ -f "$RES_DIR/precomputed_roots.tsv" ]; then
+  cp "$RES_DIR/precomputed_roots.tsv" "$APP_BUNDLE/precomputed_roots.tsv"
+  echo "    预计算词根索引：precomputed_roots.tsv"
+fi
+
 # 大词库：OCR 词典校验与「大词库选词」的只读资源（ecdict_light.tsv，约 36MB）
 if [ -f "$RES_DIR/ecdict_light.tsv" ]; then
   cp "$RES_DIR/ecdict_light.tsv" "$APP_BUNDLE/ecdict_light.tsv"
@@ -123,7 +129,7 @@ ls -1 "$APP_BUNDLE" | sed 's/^/    /'
 
 # ---------------------------------------------------------------------------
 # 5. 签名
-#    TrollStore 会自动用 fakesign(ldid) 重新签名，这里先做 ad-hoc 签名保证
+#    AltStore 会用你的 Apple ID 证书重新签名，这里先做 ad-hoc 签名保证
 #    bundle 结构完整、可通过校验；若你有开发者证书，改下面这行即可：
 #    codesign -f -s "Apple Development: 你的名字 (XXXXXXXXXX)" "$APP_BUNDLE"
 # ---------------------------------------------------------------------------
@@ -131,13 +137,13 @@ echo "==> 签名（ad-hoc）"
 if command -v codesign >/dev/null 2>&1; then
   codesign -f -s - --timestamp=none "$APP_BUNDLE" 2>/dev/null \
     && echo "✓ ad-hoc 签名完成" \
-    || echo "! ad-hoc 签名失败（TrollStore 安装时会自动 fakesign，可继续）"
+    || echo "! ad-hoc 签名失败（AltStore 自签时会用 Apple ID 重新签名，可继续）"
 else
   echo "! 未找到 codesign，跳过"
 fi
 
 # ---------------------------------------------------------------------------
-# 6. 打包 IPA（TrollStore 直接安装）
+# 6. 打包 IPA（AltStore 自签安装）
 #    结构：Payload/RootWord.app
 # ---------------------------------------------------------------------------
 if [ "$APP_ONLY" -eq 1 ]; then
@@ -151,7 +157,7 @@ PAYLOAD="$BUILD_DIR/Payload"
 mkdir -p "$PAYLOAD"
 cp -R "$APP_BUNDLE" "$PAYLOAD/"
 
-IPA_PATH="$BUILD_DIR/${APP_NAME}-${VERSION}.tipa"
+IPA_PATH="$BUILD_DIR/${APP_NAME}-${VERSION}.ipa"
 (cd "$BUILD_DIR" && zip -qry "$(basename "$IPA_PATH")" Payload)
 rm -rf "$PAYLOAD"
 
@@ -161,5 +167,5 @@ echo " 构建成功"
 echo " App ：$APP_BUNDLE"
 echo " IPA ：$IPA_PATH"
 echo "=================================================="
-echo " 安装（TrollStore）：把 IPA 传到手机，用 TrollStore 打开安装"
+echo " 安装（AltStore）：把 IPA 传到手机，用 AltStore 打开并登录 Apple ID 自签安装"
 echo " 安装（命令行）：  ios-deploy --bundle \"$APP_BUNDLE\"   （需已连接设备）"

@@ -1,3 +1,14 @@
+---
+AIGC:
+    Label: "1"
+    ContentProducer: 001191440300708461136T1XGW3
+    ProduceID: d08810df37746fbf6c9181f5580a2793_95600475ccba11f1afbb52540064ee0f
+    ReservedCode1: aPHwcWQh3xQl233qa4dBF+THAgE8gCDUMRVupi8ng7wjwiqZee3HqZN8V9PbMusAe5XFrWiUhJE0QAKcaGwzcs6fG4nsqfcovAskkLgndC0T+YTdHSnqMfEKG437pwDtr7i78ur5WjB0che/MHxYJz09hgJjmm6rjGhTn+HWTGneYGGFVUrYaGwK2fU=
+    ContentPropagator: 001191440300708461136T1XGW3
+    PropagateID: d08810df37746fbf6c9181f5580a2793_95600475ccba11f1afbb52540064ee0f
+    ReservedCode2: aPHwcWQh3xQl233qa4dBF+THAgE8gCDUMRVupi8ng7wjwiqZee3HqZN8V9PbMusAe5XFrWiUhJE0QAKcaGwzcs6fG4nsqfcovAskkLgndC0T+YTdHSnqMfEKG437pwDtr7i78ur5WjB0che/MHxYJz09hgJjmm6rjGhTn+HWTGneYGGFVUrYaGwK2fU=
+---
+
 \---  
 AIGC:  
     Label: "1"  
@@ -11,7 +22,7 @@ AIGC:
 
 # RootWord · 词根单词
 
-> 一款**原生 SwiftUI** 的 iOS 背单词 App：以词根词缀拆解为核心，内置 **OCR 拍照识别导入**、**EC Dictionary 离线词典校验纠错**与 **77 万词条大词库选词**。使用 `swiftc` 直接编译，无需 Xcode 工程依赖，可打包为 **.tipa** 通过 **TrollStore（巨魔）** 免签名安装。
+> 一款**原生 SwiftUI** 的 iOS 背单词 App：以词根词缀拆解为核心，内置 **OCR 拍照识别导入**、**EC Dictionary 离线词典校验纠错**与 **77 万词条大词库选词**。使用 `swiftc` 直接编译，无需 Xcode 工程依赖，可打包为 **.ipa** 通过 **AltStore 自签安装**（免费 Apple ID，7 天自动续签）。
 
 ![platform](https://img.shields.io/badge/platform-iOS%2015.4%20%7C%20arm64-blue)
 
@@ -42,13 +53,13 @@ App 同时提供两条高效的**导入词库路径**：
 | **大词库选词**                | 按前缀实时浏览 77 万词条中的常用词，勾选批量导入，自动去重                                                |
 | **SRS 间隔复习**             | 基于记忆曲线的调度复习，进度本地持久化                                                            |
 | **TTS 朗读**               | 本地语音合成朗读单词，无需网络                                                                |
-| **灵活导入**                 | 支持粘贴文本 / 文件（txt、csv、json）/ 示例模板三种来源，导入前去重、预览确认                                 |
+| **灵活导入**                 | 支持大众格式「单词:释义」（如 `disease:n. 疾病，病`），粘贴零配置；词根由 App 自动解析（内置 15 万词条预计算索引），旧 @/CSV/JSON 格式兼容                                  |
 
 ## 技术栈与兼容性
 
 - **UI 框架**：SwiftUI（原生声明式 UI，遵循系统设计语言，支持深色模式）
 - **编译方式**：`swiftc` 命令行直接编译（arm64-apple-ios15.4），**不依赖 Xcode 工程**（同时保留 RootWord.xcodeproj 便于 Xcode 打开调试）
-- **系统要求**：iOS 15.4 及以上（TrollStore 支持范围），arm64 设备
+- **系统要求**：iOS 15.4 及以上，arm64 设备
 - **依赖**：零第三方依赖，仅系统框架（SwiftUI / Vision / UIKit / AVFoundation / NaturalLanguage 等）
 - **隐私**：全本地运行，相机/相册权限仅用于 OCR 识别，图片不上传
 
@@ -57,7 +68,7 @@ App 同时提供两条高效的**导入词库路径**：
 工程根目录执行：
 
 ```bash
-# 完整构建：编译 + 组装 .app + 打包 .tipa
+# 完整构建：编译 + 组装 .app + 打包 .ipa
 bash build-and-package.sh
 
 # 仅编译 + 组装 .app（自定义签名场景）
@@ -69,18 +80,18 @@ bash build-and-package.sh --app-only
 | 产物         | 路径                          | 说明                                          |
 | ---------- | --------------------------- | ------------------------------------------- |
 | App Bundle | `build/RootWord.app`        | 已组装完整、ad-hoc 签名的应用包                         |
-| 安装包        | `build/RootWord-<版本号>.tipa` | TrollStore 直接安装的压缩包（含 Payload/RootWord.app） |
+| 安装包        | `build/RootWord-<版本号>.ipa` | AltStore 自签安装包（含 Payload/RootWord.app） |
 
-打包的 `.tipa` 已内置 **ecdict_light.tsv 大词库（约 36MB）**，最终安装包约 15MB。
+打包的 `.ipa` 已内置 **ecdict_light.tsv 大词库（约 36MB）** 与 **precomputed_roots.tsv 预计算词根索引（约 3.7MB，15 万词条）**，最终安装包约 15MB。
 
-## TrollStore 安装说明
+## AltStore 自签安装说明
 
-1. 将 `build/RootWord-1.2.0.tipa` 通过 AirDrop / 数据线 / 网盘传到手机；
-2. 在手机上用 **TrollStore** 打开该文件；
-3. 点击 **Install**，安装完成后即可在桌面找到「背多分」；
-4. TrollStore 会自动使用 fakesign（ldid）重签名，**无需 Apple 开发者证书**。
+1. 构建产物为 `build/RootWord-<版本号>.ipa`（含 Payload/RootWord.app）；
+2. 电脑安装 [AltServer](https://altstore.io/)、手机安装 AltStore（App Store 或 AltServer 引导安装），两者保持同一 Wi-Fi 或数据线连接；
+3. 将 `.ipa` 传到手机，在 **AltStore** 中打开，登录 **Apple ID** 完成签名安装；
+4. 安装完成后即可在桌面找到「背多分」；免费 Apple ID 签名的应用**每 7 天需续签**，打开 AltStore（需连接同一 Wi-Fi 下的 AltServer 或数据线）可自动/手动刷新。
 
-> 支持 TrollStore 的设备：iOS 14.0 ~ 17.0 的 arm64 设备（越狱 / 利用巨魔漏洞安装）。
+> 说明：AltStore 使用你的 Apple ID 对 `.ipa` 重新签名（AltStore 会覆盖 ad-hoc 签名），免费账号最多同时保留 3 个自签应用。
 
 ## 目录结构
 
@@ -108,6 +119,7 @@ rootword/
 │   ├── Info.plist            # 应用配置（权限声明、版本号）
 │   ├── RootLibrary.json      # 词根词缀库
 │   ├── ecdict_light.tsv      # ECDICT 大词库（word/tag/frq/translation）
+│   ├── precomputed_roots.tsv # 预计算词根索引（导入时 O(1) 命中）
 │   └── Icons/                # App 图标
 ├── RootWord.xcodeproj/       # Xcode 工程（可选，swiftc 编译不依赖）
 ├── docs/                     # 产品设计文档
@@ -127,13 +139,19 @@ rootword/
   2. 「大词库选词」功能按前缀浏览**常用词**（tag 命中考试标签或 frq > 0），勾选导入；
 - 词库缺失时 App 自动降级：校验功能静默跳过，不误报。
 
+## 预计算词根索引
+
+- **文件**：`Resources/precomputed_roots.tsv`（`word<TAB>词根拆解`，约 15 万词条 / 3.7MB）；
+- **生成**：离线脚本 `scripts/generate_precomputed_roots.py` 读取 ecdict_light.tsv，调用与 App `RootParser` 相同的 S2–S7 拆解逻辑，仅保留成功拆解 ≥2 片段的词；
+- **作用**：导入单词时 O(1) 命中词根拆解，未命中再走在线解析；配合「单词:释义」大众格式实现**零配置自动分配词根**。
+
 ## 已知限制
 
 - **OCR 场景**：针对印刷体单词书页优化，手写体、艺术字体、低对比度照片识别率下降；拍照时请尽量保证页面平整、光线充足；
 - **OCR 校验**：词典校验仅覆盖英文单词/常见词组；释义一致性判断依赖识别出的中文，释义行缺失时不判可疑（避免误报）；
 - **生僻词**：不在常见考试词表且词频为 0 的单词会标 `?`，属正常提示，可手动确认后导入；
-- **大词库体积**：内置 36MB 词库使安装包增大（tipa 约 15MB），首次进入 OCR/选词页加载词库需数秒；
-- **TrollStore 范围**：仅支持已安装 TrollStore 且系统版本在支持范围内的设备，App 本身未做 Apple App Store 签名适配；
+- **大词库体积**：内置 36MB 词库使安装包增大（ipa 约 15MB），首次进入 OCR/选词页加载词库需数秒；
+- **自签限制**：使用免费 Apple ID 通过 AltStore 自签安装，每 7 天需续签；App 本身未做 Apple App Store 签名适配（无法直接上架 App Store）；
 - **多义词**：词库释义为 ECDICT 标准释义，OCR 书页释义若为个性化简写，可能触发"释义不一致"标记，属保守策略。
 
 ## 许可证
@@ -146,3 +164,4 @@ Copyright (c) 2026 lxsffy
 ```
 
 词库数据来源于 [ECDICT](https://github.com/skywind3000/ECDICT)（开源英汉词典数据库，其本身亦开放使用，请遵守其许可证）。
+*（内容由AI生成，仅供参考）*

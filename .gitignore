@@ -40,5 +40,12 @@ Packages/
 *~
 .tool-results/
 .history/
-.swiftpm/
 *.swiftdeps
+
+# ===== 临时文件补充 =====
+*.log
+*.tmp
+*.temp
+*.bak
+*.cache
+temp/
