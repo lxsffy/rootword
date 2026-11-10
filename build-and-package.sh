@@ -1,0 +1,227 @@
+#!/bin/bash
+# ============================================================================
+#  RootWord · 词根单词 —— 编译打包脚本（无需 Xcode 工程）
+#
+#  为什么不用 .xcodeproj：
+#    本 App 零第三方依赖、无 Asset Catalog、无 Storyboard，
+#    用 swiftc 直接编译成 arm64 可执行文件 + 手工组装 .app 更透明、更易审计，
+#    也方便在命令行环境反复构建。若你更习惯 Xcode，见 README 的「Xcode 工程」一节。
+#
+#  用法：
+#    ./build-and-package.sh            # 编译 + 组装 .app + 打包 .ipa
+#    ./build-and-package.sh --app-only # 只出 .app（自定义签名时用）
+#
+#  产物：build/RootWord.app 和 build/RootWord.ipa
+# ============================================================================
+
+set -euo pipefail
+
+# ---------------------------------------------------------------------------
+# 0. 路径与参数
+# ---------------------------------------------------------------------------
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SRC_DIR="$SCRIPT_DIR/Sources"
+RES_DIR="$SCRIPT_DIR/Resources"
+BUILD_DIR="$SCRIPT_DIR/build"
+APP_NAME="RootWord"
+DEPLOYMENT_TARGET="15.4"
+
+APP_ONLY=0
+for arg in "$@"; do
+  case "$arg" in
+    --app-only) APP_ONLY=1 ;;
+    *) echo "未知参数：$arg"; exit 1 ;;
+  esac
+done
+
+if [ ! -d "$SRC_DIR" ]; then
+  echo "✗ 找不到源码目录：$SRC_DIR"
+  exit 1
+fi
+
+echo "==> RootWord 构建开始"
+echo "    源码：$SRC_DIR"
+
+# ---------------------------------------------------------------------------
+# 1. 环境检查
+# ---------------------------------------------------------------------------
+if ! xcrun --sdk iphoneos --show-sdk-path >/dev/null 2>&1; then
+  echo "✗ 未找到 iOS SDK。请先安装 Xcode 并执行： sudo xcode-select -s /Applications/Xcode.app"
+  exit 1
+fi
+
+SDK_PATH="$(xcrun --sdk iphoneos --show-sdk-path)"
+echo "    SDK ：$SDK_PATH"
+
+# ---------------------------------------------------------------------------
+# 2. 清理旧产物
+# ---------------------------------------------------------------------------
+rm -rf "$BUILD_DIR"
+mkdir -p "$BUILD_DIR"
+
+# ---------------------------------------------------------------------------
+# 3. 编译（arm64 / iOS 15.4 / 纯系统框架）
+#    -parse-as-library : 因为 RootWordApp.swift 使用 @main
+#    -swift-version 5  : 与 Xcode 工程默认 Swift 5 语言模式一致
+# ---------------------------------------------------------------------------
+echo "==> 编译 Swift 源码"
+
+# 注意：工程路径含空格，必须用数组传递，禁止裸 $SWIFT_FILES 展开
+SWIFT_FILES=()
+while IFS= read -r line; do
+  [ -n "$line" ] && SWIFT_FILES+=("$line")
+done < <(find "$SRC_DIR" -name '*.swift' | sort)
+echo "    共 ${#SWIFT_FILES[@]} 个源文件"
+
+xcrun -sdk iphoneos swiftc \
+  -target arm64-apple-ios${DEPLOYMENT_TARGET} \
+  -sdk "$SDK_PATH" \
+  -parse-as-library \
+  -swift-version 5 \
+  -O \
+  -warnings-as-errors \
+  -l sqlite3 \
+  -o "$BUILD_DIR/$APP_NAME" \
+  "${SWIFT_FILES[@]}"
+
+echo "✓ 编译通过：$BUILD_DIR/$APP_NAME"
+
+# ---------------------------------------------------------------------------
+# 4. 组装 .app
+# ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# 4.1 版本号自动递增（防止同名覆盖）
+#    状态文件 scripts/build_version.txt 记录上次打包版本；首次无状态文件时
+#    以 Resources/Info.plist 的 CFBundleShortVersionString 为起始版本。
+#    每次打包 patch +1，patch 到 9 进位 minor（1.2.9 -> 1.3.0）；
+#    同步写回 Resources/Info.plist（ShortVersion = 新版本号，Build = 旧值 +1），
+#    保证 app 内版本号、产物文件名、下次递增基准三者一致。
+#    注意：状态文件不放 build/，因为每次构建会 rm -rf 整个 build/ 目录。
+# ---------------------------------------------------------------------------
+VERSION_FILE="$SCRIPT_DIR/scripts/build_version.txt"
+PLIST_SRC="$RES_DIR/Info.plist"
+mkdir -p "$SCRIPT_DIR/scripts"
+
+if [ -f "$VERSION_FILE" ]; then
+  LAST_VERSION="$(cat "$VERSION_FILE" | tr -d '[:space:]')"
+else
+  LAST_VERSION="$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$PLIST_SRC" 2>/dev/null || echo "1.0.0")"
+fi
+
+# 解析 X.Y.Z 并递增 patch；patch 到 9 后进位 minor（1.2.9 -> 1.3.0）
+MAJOR="${LAST_VERSION%%.*}"
+REST="${LAST_VERSION#*.}"
+MINOR="${REST%%.*}"
+PATCH="${REST##*.}"
+PATCH=$((PATCH + 1))
+if [ "$PATCH" -gt 9 ]; then
+  PATCH=0
+  MINOR=$((MINOR + 1))
+fi
+VERSION="$MAJOR.$MINOR.$PATCH"
+
+OLD_BUILD="$(/usr/libexec/PlistBuddy -c "Print :CFBundleVersion" "$PLIST_SRC" 2>/dev/null || echo "1")"
+NEW_BUILD=$((OLD_BUILD + 1))
+
+# 写回源 Info.plist（下次构建 cp 到 bundle 时自然带新版本）
+/usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" "$PLIST_SRC" 2>/dev/null \
+  || /usr/libexec/PlistBuddy -c "Add :CFBundleShortVersionString string $VERSION" "$PLIST_SRC"
+/usr/libexec/PlistBuddy -c "Set :CFBundleVersion $NEW_BUILD" "$PLIST_SRC" 2>/dev/null \
+  || /usr/libexec/PlistBuddy -c "Add :CFBundleVersion string $NEW_BUILD" "$PLIST_SRC"
+
+echo "$VERSION" > "$VERSION_FILE"
+# 变量必须用 {} 包裹：bash 会把紧邻的中文全角标点并入变量名，
+# 在 set -u 下会报 `VERSION<全角括号>: unbound variable` 并中断构建。
+echo "==> 版本号自动递增：${LAST_VERSION} -> ${VERSION}（build ${NEW_BUILD}，状态：${VERSION_FILE}）"
+
+echo "==> 组装 App Bundle"
+
+APP_BUNDLE="$BUILD_DIR/$APP_NAME.app"
+mkdir -p "$APP_BUNDLE"
+mv "$BUILD_DIR/$APP_NAME" "$APP_BUNDLE/$APP_NAME"
+chmod +x "$APP_BUNDLE/$APP_NAME"
+
+# Info.plist 必须在 bundle 根目录
+cp "$RES_DIR/Info.plist" "$APP_BUNDLE/Info.plist"
+
+# 词根库：只读资源，App 通过 Bundle.main.url(forResource:) 读取
+cp "$RES_DIR/RootLibrary.json" "$APP_BUNDLE/RootLibrary.json"
+
+# 预计算词根索引（SQLite）：构建期由 tsv 转换生成 roots.sqlite，运行时由
+# SQLiteRootIndex 只读按需查询，不再全量载入内存。tsv 只保留为构建输入，
+# 不复制进 bundle（约省 3.9MB）；幂等转换：已存在且最新时脚本自动跳过，失败即中止构建。
+echo "==> 转换预计算词根索引 tsv -> roots.sqlite"
+python3 "$SCRIPT_DIR/tools/convert_roots_tsv_to_sqlite.py" \
+  --tsv "$RES_DIR/precomputed_roots.tsv" \
+  --out "$RES_DIR/roots.sqlite"
+if [ ! -f "$RES_DIR/roots.sqlite" ]; then
+  echo "✗ roots.sqlite 生成失败，无法组装 bundle"
+  exit 1
+fi
+cp "$RES_DIR/roots.sqlite" "$APP_BUNDLE/roots.sqlite"
+echo "    预计算词根索引（SQLite）：roots.sqlite"
+[ -f "$APP_BUNDLE/roots.sqlite" ] || { echo "✗ roots.sqlite 未打进 bundle"; exit 1; }
+
+# 词典：OCR 词典校验与「大词库选词」的只读资源（Dictionary.sqlite，46MB）
+# 1.4.0 起替代 ecdict_light.tsv：全量加载 → SQLite 主键按需查询，新增 phonetic 音标列
+if [ -f "$RES_DIR/Dictionary.sqlite" ]; then
+  cp "$RES_DIR/Dictionary.sqlite" "$APP_BUNDLE/Dictionary.sqlite"
+  echo "    词典：Dictionary.sqlite"
+fi
+
+# 图标：iOS 在 bundle 根目录按 AppIcon60x60@2x/@3x 命名查找
+if [ -d "$RES_DIR/Icons" ]; then
+  cp "$RES_DIR/Icons/"*.png "$APP_BUNDLE/" 2>/dev/null || true
+fi
+
+# 校验 Info.plist 是合法 plist
+plutil -lint "$APP_BUNDLE/Info.plist" >/dev/null || { echo "✗ Info.plist 格式错误"; exit 1; }
+
+# 从 Info.plist 读版本号，用于 IPA 命名
+VERSION=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$APP_BUNDLE/Info.plist" 2>/dev/null || echo "1.1.0")
+
+echo "✓ Bundle 组装完成：$APP_BUNDLE"
+ls -1 "$APP_BUNDLE" | sed 's/^/    /'
+
+# ---------------------------------------------------------------------------
+# 5. 签名
+#    AltStore 会用你的 Apple ID 证书重新签名，这里先做 ad-hoc 签名保证
+#    bundle 结构完整、可通过校验；若你有开发者证书，改下面这行即可：
+#    codesign -f -s "Apple Development: 你的名字 (XXXXXXXXXX)" "$APP_BUNDLE"
+# ---------------------------------------------------------------------------
+echo "==> 签名（ad-hoc）"
+if command -v codesign >/dev/null 2>&1; then
+  codesign -f -s - --timestamp=none "$APP_BUNDLE" 2>/dev/null \
+    && echo "✓ ad-hoc 签名完成" \
+    || echo "! ad-hoc 签名失败（AltStore 自签时会用 Apple ID 重新签名，可继续）"
+else
+  echo "! 未找到 codesign，跳过"
+fi
+
+# ---------------------------------------------------------------------------
+# 6. 打包 IPA（AltStore 自签安装）
+#    结构：Payload/RootWord.app
+# ---------------------------------------------------------------------------
+if [ "$APP_ONLY" -eq 1 ]; then
+  echo "==> 已指定 --app-only，跳过 IPA 打包"
+  echo "完成：$APP_BUNDLE"
+  exit 0
+fi
+
+echo "==> 打包 IPA"
+PAYLOAD="$BUILD_DIR/Payload"
+mkdir -p "$PAYLOAD"
+cp -R "$APP_BUNDLE" "$PAYLOAD/"
+
+IPA_PATH="$BUILD_DIR/${APP_NAME}-${VERSION}.ipa"
+(cd "$BUILD_DIR" && zip -qry "$(basename "$IPA_PATH")" Payload)
+rm -rf "$PAYLOAD"
+
+echo ""
+echo "=================================================="
+echo " 构建成功"
+echo " App ：$APP_BUNDLE"
+echo " IPA ：$IPA_PATH"
+echo "=================================================="
+echo " 安装（AltStore）：把 IPA 传到手机，用 AltStore 打开并登录 Apple ID 自签安装"
+echo " 安装（命令行）：  ios-deploy --bundle \"$APP_BUNDLE\"   （需已连接设备）"

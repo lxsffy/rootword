@@ -1,0 +1,66 @@
+# ===== macOS =====
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.Spotlight-V100
+.Trashes
+
+# ===== Xcode 构建产物 =====
+build/
+DerivedData/
+*.app
+*.dSYM
+*.ipa
+*.tipa
+*.xcarchive
+*.hmap
+*.moved-aside
+Index.noindex/
+*.noindex/
+
+# ===== Xcode 本地用户数据（不进版本库） =====
+xcuserdata/
+*.xcuserdata/
+*.xcuserstate
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+
+# ===== Swift Package Manager =====
+.build/
+.swiftpm/
+Packages/
+
+# ===== 其他临时文件 =====
+*.swp
+*.orig
+*.rej
+*~
+.tool-results/
+.history/
+*.swiftdeps
+
+# ===== 构建版本状态（本机自动递增，不提交） =====
+scripts/build_version.txt
+
+# ===== 临时文件补充 =====
+*.log
+*.tmp
+*.temp
+*.bak
+*.cache
+temp/
+
+# ===== 公开仓库不含的预置数据 / 内部资料（2026-11-10）=====
+# 体积与数据授权考虑：二进制词库不入库，clone 后按需自备。
+# roots.sqlite 无需手动准备：build-and-package.sh 会用入库的
+# precomputed_roots.tsv + tools/convert_roots_tsv_to_sqlite.py 构建期自动生成。
+Resources/Dictionary.sqlite
+Resources/roots.sqlite
+Resources/roots.db
+
+# 内部设计输入与逆向 Demo，不对外发布
+背多分App-项目提示词.md
+flashcard_demo.py
