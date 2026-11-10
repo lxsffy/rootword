@@ -165,7 +165,7 @@ bash Tests/run-tests.sh
 > **从 Git 仓库 clone 后请先读这一段**：为控制仓库体积与第三方数据授权，公开仓库**不包含** `Resources/Dictionary.sqlite`（约 55.5 MB）、`Resources/roots.sqlite`、`Resources/roots.db`，也不含 `背多分App-项目提示词.md` 与 `flashcard_demo.py`（内部资料）。
 >
 > - `roots.sqlite` **无需手动准备**：`build-and-package.sh` 会用仓库内的 `Resources/precomputed_roots.tsv` 调用 `tools/convert_roots_tsv_to_sqlite.py` 在构建期幂等生成；
-> - `Dictionary.sqlite` 需自行准备并放到 `Resources/`（表结构见 `Sources/Core/SQLiteDict.swift` 头部与下文）；缺失时构建仍可通过（脚本按存在性复制），但 OCR 词典校验、大词库选词与音标查询会不可用；
+> - `Dictionary.sqlite` 需自行准备并放到 `Resources/`（表结构见 `Sources/Core/SQLiteDict.swift` 头部与下文）；命令行打包脚本按存在性复制，缺它仍能出包，但 OCR 词典校验、大词库选词与音标查询会不可用；**用 Xcode 打开工程时**该资源引用会显示缺失，需先自备词典文件；
 > - 其余源码、工程文件、`Tests/`、`docs/` 与构建脚本均完整入库。
 
 ### Dictionary.sqlite（大词典，768,739 词 / 约 55.5 MB）
